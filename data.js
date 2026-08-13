@@ -80,7 +80,7 @@ const COURSES = [
      ------------------------------------------------------------ */
   {
     id: "windows11",
-    code: "CIS 150",
+    code: "NOS 130",
     name: "Introduction to Windows 11",
     accent: "indigo",
     description: "Hardware, file/memory management, configuration, and utilities at the support level.",
