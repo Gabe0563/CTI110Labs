@@ -92,7 +92,7 @@ const COURSES = [
         type: "Outline",
         week: "—",
         updated: "2026-08-03",
-        href: "https://gabe0563.github.io/Windows11Labs/Windows11_Course_Outline_16Week.md", // ← placeholder, update once that repo is live
+        href: "NOS_130_Tentative_Schedule_FA26.docx", // ← placeholder, update once that repo is live
         instructorOnly: false
       },
       {
