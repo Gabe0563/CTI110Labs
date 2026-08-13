@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Hub — Assignments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">// course-hub</p>
+      <h1>Course Assignments</h1>
+      <p class="subtitle">Every class, every handout, one address. Pick a course below to open its files.</p>
+      <div class="searchbar">
+        <label for="search" class="visually-hidden">Search assignments</label>
+        <input type="search" id="search" placeholder="Search assignments, labs, readings…" autocomplete="off">
+      </div>
+    </div>
+  </header>
+
+  <main id="courses" class="courses"></main>
+
+  <p id="empty-state" class="global-empty" hidden>No assignments match your search.</p>
+
+  <footer class="site-footer">
+    <p>Built with a plain HTML/CSS/JS site. To add a class or assignment, edit <code>data.js</code> — no other files needed.</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
