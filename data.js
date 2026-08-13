@@ -112,7 +112,7 @@ const COURSES = [
         updated: "2026-08-13",
         href: "Chapter1_Quiz.html",   // or the full URL if it's in a different repo
         instructorOnly: false
-      }
+      },
       {
         title: "Lab 1 Answer Key & Rubric",
         description: "Grading guide — instructor use",
