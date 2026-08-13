@@ -86,15 +86,15 @@ const COURSES = [
     accent: "indigo",
     description: "Hardware, file/memory management, configuration, and utilities at the support level.",
     assignments: [
-      {
-        title: "16-Week Course Outline",
-        description: "Full semester roadmap",
-        type: "Outline",
-        week: "—",
-        updated: "2026-08-03",
-        href: "NOS_130_Tentative_Schedule_FA26.docx", // ← placeholder, update once that repo is live
-        instructorOnly: false
-      },
+     {
+       title: "Tentative Schedule — Fall 2026",
+       description: "Course schedule",
+       type: "Schedule",
+       week: "—",
+        updated: "2026-08-13",
+        href: "NOS_130_Tentative_Schedule_FA26.docx",
+        reinstructorOnly: false
+},
       {
         title: "Chapter 1 Deep Dive Supplement",
         description: "Lecture notes beyond the textbook",
