@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 Quiz — Describing Windows 11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1B1F27;
+    --muted: #626B79;
+    --faint: #9AA3B0;
+    --bg: #F1F3F6;
+    --surface: #FFFFFF;
+    --hairline: #DCE1E8;
+    --hairline-strong: #C3CAD4;
+    --accent: #4F51C9;
+    --accent-soft: #E9E9FB;
+    --good: #0E8F6B;
+    --good-soft: #E4F5EE;
+    --bad: #C43F3F;
+    --bad-soft: #FBE9E9;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+    --font-body: "Inter", "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", "Consolas", monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  .hero {
+    background: linear-gradient(180deg, #171B22 0%, #1E2430 100%);
+    color: #F1F3F6;
+    padding: 56px 24px 44px;
+  }
+  .hero-inner { max-width: 760px; margin: 0 auto; }
+  .eyebrow { font-family: var(--font-mono); font-size: 13px; color: #A7A9F0; margin: 0 0 12px; }
+  .hero h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(28px, 4.5vw, 40px); line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .hero p { font-size: 16px; color: #B9C1CE; max-width: 60ch; margin: 0; }
+
+  main {
+    max-width: 760px;
+    margin: -20px auto 60px;
+    padding: 0 24px;
+  }
+
+  .progress-bar {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    box-shadow: 0 1px 2px rgba(20,24,31,0.04), 0 8px 24px rgba(20,24,31,0.05);
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--hairline);
+    border-radius: 999px;
+    margin: 0 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 200ms ease;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(20,24,31,0.04), 0 8px 24px rgba(20,24,31,0.05);
+    padding: 22px 24px 20px;
+    margin-bottom: 16px;
+  }
+
+  .q-number {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    margin: 0 0 14px;
+    line-height: 1.35;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+    cursor: pointer;
+    font-size: 14.5px;
+    transition: border-color 120ms ease, background-color 120ms ease;
+  }
+  .option:hover { border-color: var(--accent); background: var(--bg); }
+  .option input { margin-top: 3px; flex: none; accent-color: var(--accent); }
+  .option.correct { border-color: var(--good); background: var(--good-soft); }
+  .option.incorrect { border-color: var(--bad); background: var(--bad-soft); }
+  .option.disabled { cursor: default; }
+  .option.disabled:hover { background: none; }
+  .option.correct:hover, .option.incorrect:hover { background: var(--good-soft); }
+  .option.incorrect:hover { background: var(--bad-soft); }
+
+  .explanation {
+    display: none;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--accent);
+    background: var(--bg);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .explanation.show { display: block; }
+  .explanation b { color: var(--ink); }
+
+  .quiz-footer {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(20,24,31,0.04), 0 8px 24px rgba(20,24,31,0.05);
+    padding: 22px 24px;
+    text-align: center;
+  }
+
+  button.primary {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  button.primary:hover { filter: brightness(1.08); }
+  button.primary:disabled { background: var(--hairline-strong); color: var(--faint); cursor: not-allowed; }
+
+  button.ghost {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 13px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--hairline-strong);
+    padding: 10px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button.ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .score-headline {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 30px;
+    margin: 0 0 6px;
+  }
+  .score-sub { color: var(--muted); font-size: 14px; margin: 0 0 4px; }
+
+  #results-panel { display: none; }
+  #results-panel.show { display: block; }
+
+  @media (max-width: 600px) {
+    .hero { padding: 44px 18px 36px; }
+    main { padding: 0 14px; }
+    .question-card { padding: 18px 16px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">// Introduction to Windows 11 — Chapter 1</p>
+    <h1>Chapter 1 Quiz: Describing Windows 11</h1>
+    <p>15 questions covering apps &amp; the OS, editions, the desktop, and what's actually happening underneath. Pick an answer for each question — you'll see immediately whether it's correct and why.</p>
+  </div>
+</header>
+
+<main>
+  <div class="progress-bar">
+    <span id="progress-label">0 / 15 answered</span>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <span id="score-label">Score: 0</span>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="quiz-footer">
+    <button class="primary" id="submit-btn" disabled>Answer all questions to see your score</button>
+  </div>
+
+  <div id="results-panel">
+    <div class="quiz-footer" style="margin-top:16px;">
+      <p class="score-headline" id="final-score">—</p>
+      <p class="score-sub" id="final-message"></p>
+      <button class="ghost" id="retry-btn">Retake Quiz</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   QUIZ DATA — edit questions here.
+   Each question: text, an array of options, the index of the
+   correct option, and an explanation shown after answering.
+   ============================================================ */
+const QUESTIONS = [
+  {
+    text: "What is the primary role of an operating system?",
+    options: [
+      "To provide a web browser and office apps out of the box",
+      "To arbitrate access to hardware resources (CPU, memory, storage) among competing programs",
+      "To physically connect a computer to the internet",
+      "To design the icons used on the desktop"
+    ],
+    correct: 1,
+    explanation: "An OS's core job is resource arbitration — scheduling CPU time, allocating memory, and mediating hardware access through drivers, all while enforcing security boundaries between programs."
+  },
+  {
+    text: "While Notepad is open, Task Manager shows a notepad.exe entry using memory and CPU time. What does this represent?",
+    options: [
+      "The app itself, with no distinction from what's running",
+      "A process — a running instance of the app, with its own memory space and at least one thread",
+      "A service that starts automatically at boot",
+      "A driver managing the keyboard"
+    ],
+    correct: 1,
+    explanation: "The \"app\" the user sees is backed by one or more processes. Notepad running is a process; a process can have multiple threads doing work within it."
+  },
+  {
+    text: "Beyond just 'who is using it,' what typically distinguishes a server OS from a workstation OS like Windows 11?",
+    options: [
+      "Servers can't run any of the same software as a workstation",
+      "Servers are tuned for background/multi-user throughput; workstations like Windows 11 favor foreground app responsiveness",
+      "There is no real technical difference, only marketing",
+      "Workstations require more expensive hardware than servers"
+    ],
+    correct: 1,
+    explanation: "Server operating systems are optimized to handle many simultaneous background requests efficiently. Windows 11 is tuned the opposite way — prioritizing whatever app is in the foreground so the person using it feels a responsive system."
+  },
+  {
+    text: "A small business needs 20 laptops joined to a company domain, with BitLocker encryption and centralized policy control. Which Windows 11 edition fits this need?",
+    options: [
+      "Windows 11 Home",
+      "Windows 11 Pro",
+      "Any edition — domain join is available everywhere",
+      "None; this requires a separate server OS entirely"
+    ],
+    correct: 1,
+    explanation: "Domain join, BitLocker, and Group Policy management are Pro-and-above features. Home is built for individual consumers, not managed business fleets."
+  },
+  {
+    text: "Why do features like BitLocker and Group Policy exist only in Windows 11 Pro and above, not Home?",
+    options: [
+      "They're technically impossible to run on consumer-grade hardware",
+      "Home users would never benefit from any form of security",
+      "They target business/IT needs — managing and securing many machines — which Home's consumer audience doesn't need",
+      "Microsoft removes them from Home to save disk space"
+    ],
+    correct: 2,
+    explanation: "Edition differences generally track audience needs: Home targets individual consumers, while Pro and above add the management and security tools an organization needs to control a fleet of devices."
+  },
+  {
+    text: "True or False: In most apps, a touchscreen tap and a mouse click trigger the same underlying pointer event.",
+    options: ["True", "False"],
+    correct: 0,
+    explanation: "Windows abstracts touch, pen, and mouse input into a common pointer/input model, so in most apps a tap and a click fire the same underlying event. An app that behaves differently with touch usually just isn't touch-optimized."
+  },
+  {
+    text: "Which of these is part of what happens on a Windows 11 PC before you ever see the sign-in (lock) screen?",
+    options: [
+      "The Start menu layout is downloaded from the cloud",
+      "UEFI firmware hands off to the Boot Manager, which loads the kernel before Winlogon presents the sign-in screen",
+      "All installed apps are opened automatically",
+      "The BIOS runs the full operating system directly, with no separate boot process"
+    ],
+    correct: 1,
+    explanation: "Boot proceeds roughly: UEFI firmware → Boot Manager → Winload → Kernel initialization → Winlogon, which is what finally shows you the sign-in screen."
+  },
+  {
+    text: "Which of the following is a standard object found on the Windows 11 desktop?",
+    options: [
+      "The Registry Editor window",
+      "The taskbar",
+      "The BIOS setup screen",
+      "The Windows Recovery Environment"
+    ],
+    correct: 1,
+    explanation: "The taskbar, Start button, desktop icons, and widgets are all part of the normal Windows 11 desktop. The other options are separate tools or environments, not desktop objects."
+  },
+  {
+    text: "What is the name of the Windows process responsible for rendering the taskbar, Start menu, and desktop icons?",
+    options: ["winlogon.exe", "explorer.exe", "dwm.exe only", "svchost.exe"],
+    correct: 1,
+    explanation: "explorer.exe is the Windows Shell process. It draws the taskbar, Start menu, and desktop — separate from the OS kernel itself."
+  },
+  {
+    text: "A user says their taskbar and Start button disappeared, but the music app they had open kept playing the whole time. What's the most likely explanation and fix?",
+    options: [
+      "The whole operating system crashed; a full reinstall is needed",
+      "explorer.exe (the shell) likely crashed while other processes kept running; restarting explorer.exe from Task Manager should restore the desktop",
+      "The computer needs new RAM immediately",
+      "This can only be fixed by an unplug-and-replug of the power cable"
+    ],
+    correct: 1,
+    explanation: "Since the music kept playing, the OS itself and other processes were fine. This points to the shell (explorer.exe) crashing — restarting just that process from Task Manager (File → Run new task → explorer.exe) typically fixes it without a reboot."
+  },
+  {
+    text: "Which keyboard shortcut opens File Explorer directly?",
+    options: ["Win+D", "Win+L", "Win+E", "Alt+Tab"],
+    correct: 2,
+    explanation: "Win+E opens File Explorer. Win+D shows the desktop, Win+L locks the PC, and Alt+Tab switches between open app windows."
+  },
+  {
+    text: "A student customizes their Start menu layout on a shared lab computer. The next student signs in and sees the default layout instead. Why?",
+    options: [
+      "Start menu customization is a bug and doesn't actually save",
+      "Start menu layout and pinned apps are stored per-user, so a different account sees its own default layout",
+      "The lab computer must be broken",
+      "Start menu changes only apply for 24 hours regardless of account"
+    ],
+    correct: 1,
+    explanation: "Start menu customizations are saved per-user, tied to that account's profile — not machine-wide. A different account naturally starts from its own default layout."
+  },
+  {
+    text: "Why does typing into the taskbar Search box return results almost instantly, even on a large hard drive?",
+    options: [
+      "Windows scans the entire disk fresh every time you type",
+      "A background Windows Search service maintains a pre-built index, so search reads from that instead of scanning files live",
+      "Search results are always guesses and are frequently wrong",
+      "It only searches file names typed in the last hour"
+    ],
+    correct: 1,
+    explanation: "The Windows Search service continuously maintains an index — a pre-built lookup table — in the background, which is why results appear quickly instead of requiring a live scan of the whole disk."
+  },
+  {
+    text: "What is a key difference between installing an app from the Microsoft Store versus a traditional Win32 (.exe/.msi) installer?",
+    options: [
+      "Store apps always cost money; Win32 apps are always free",
+      "Store/UWP apps run in a sandbox with limited default system access; Win32 installers can write more broadly to the system, including the registry",
+      "There is no real difference between the two",
+      "Win32 apps cannot be uninstalled once installed"
+    ],
+    correct: 1,
+    explanation: "Store/UWP apps are sandboxed by default, requesting explicit permission for things like files or the camera. Win32 installers have broader access, which is also why they can sometimes leave leftover files or registry entries behind after uninstalling."
+  },
+  {
+    text: "A student says, 'I shut my laptop down overnight, but a glitch was still there in the morning — it only went away after I did a Restart.' What Windows 11 feature best explains this?",
+    options: [
+      "Fast Startup, which hibernates the kernel session on Shut Down instead of fully powering off, unlike Restart which always does a full reboot",
+      "This is impossible and the student is mistaken",
+      "Windows Update, which only runs during a Restart",
+      "The Windows Search index, which resets only on Restart"
+    ],
+    correct: 0,
+    explanation: "With Fast Startup enabled, 'Shut Down' hibernates the kernel session rather than fully powering off, so some state can persist. 'Restart' always performs a full, clean reboot, which is why it can resolve issues Shut Down doesn't."
+  }
+];
+
+/* ============================================================
+   Rendering + scoring logic — no need to edit below this line.
+   ============================================================ */
+const container = document.getElementById("quiz-container");
+const submitBtn = document.getElementById("submit-btn");
+const progressLabel = document.getElementById("progress-label");
+const progressFill = document.getElementById("progress-fill");
+const scoreLabel = document.getElementById("score-label");
+const resultsPanel = document.getElementById("results-panel");
+const finalScore = document.getElementById("final-score");
+const finalMessage = document.getElementById("final-message");
+const retryBtn = document.getElementById("retry-btn");
+
+let answered = new Array(QUESTIONS.length).fill(null);
+let locked = false;
+
+function buildQuiz() {
+  container.innerHTML = QUESTIONS.map((q, qi) => `
+    <div class="question-card" data-qi="${qi}">
+      <span class="q-number">Question ${qi + 1} of ${QUESTIONS.length}</span>
+      <p class="q-text">${q.text}</p>
+      <div class="options">
+        ${q.options.map((opt, oi) => `
+          <label class="option" data-qi="${qi}" data-oi="${oi}">
+            <input type="radio" name="q${qi}" value="${oi}">
+            <span>${opt}</span>
+          </label>
+        `).join("")}
+      </div>
+      <div class="explanation" id="explain-${qi}"></div>
+    </div>
+  `).join("");
+
+  container.querySelectorAll('input[type="radio"]').forEach(input => {
+    input.addEventListener("change", onAnswer);
+  });
+}
+
+function onAnswer(e) {
+  if (locked) return;
+  const qi = parseInt(e.target.name.replace("q", ""));
+  const oi = parseInt(e.target.value);
+  answered[qi] = oi;
+  updateProgress();
+  checkAllAnswered();
+}
+
+function updateProgress() {
+  const count = answered.filter(a => a !== null).length;
+  progressLabel.textContent = `${count} / ${QUESTIONS.length} answered`;
+  progressFill.style.width = (count / QUESTIONS.length * 100) + "%";
+}
+
+function checkAllAnswered() {
+  const allAnswered = answered.every(a => a !== null);
+  submitBtn.disabled = !allAnswered;
+  submitBtn.textContent = allAnswered ? "Submit Quiz" : "Answer all questions to see your score";
+}
+
+function submitQuiz() {
+  locked = true;
+  let score = 0;
+
+  QUESTIONS.forEach((q, qi) => {
+    const chosen = answered[qi];
+    if (chosen === q.correct) score++;
+
+    const optionEls = container.querySelectorAll(`.option[data-qi="${qi}"]`);
+    optionEls.forEach(el => {
+      const oi = parseInt(el.dataset.oi);
+      el.classList.add("disabled");
+      el.querySelector("input").disabled = true;
+      if (oi === q.correct) el.classList.add("correct");
+      else if (oi === chosen) el.classList.add("incorrect");
+    });
+
+    const explainEl = document.getElementById(`explain-${qi}`);
+    const verdict = chosen === q.correct ? "Correct." : "Not quite.";
+    explainEl.innerHTML = `<b>${verdict}</b> ${q.explanation}`;
+    explainEl.classList.add("show");
+  });
+
+  scoreLabel.textContent = `Score: ${score} / ${QUESTIONS.length}`;
+  submitBtn.style.display = "none";
+
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  finalScore.textContent = `${score} / ${QUESTIONS.length} (${pct}%)`;
+  finalMessage.textContent =
+    pct >= 90 ? "Excellent work — you've got Chapter 1 down cold." :
+    pct >= 70 ? "Solid grasp of the material, with a few gaps worth reviewing above." :
+    "Worth reviewing the explanations above and the Chapter 1 material before moving on.";
+  resultsPanel.classList.add("show");
+  resultsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetQuiz() {
+  answered = new Array(QUESTIONS.length).fill(null);
+  locked = false;
+  resultsPanel.classList.remove("show");
+  submitBtn.style.display = "";
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Answer all questions to see your score";
+  updateProgress();
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+submitBtn.addEventListener("click", submitQuiz);
+retryBtn.addEventListener("click", resetQuiz);
+
+buildQuiz();
+</script>
+
+</body>
+</html>
