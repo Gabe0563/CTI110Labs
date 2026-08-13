@@ -70,15 +70,7 @@ const COURSES = [
         href: "Chapter1_TroubleShooting.html",
         instructorOnly: false
       },
-       {
-        title: "Chapter 1 Quiz",
-        description: "15 questions, instant feedback",
-        type: "Quiz",
-        week: "1",
-        updated: "2026-08-13",
-        href: "Chapter1_Quiz.html",   // or the full URL if it's in a different repo
-        instructorOnly: false
-      }
+     
     ]
   },
 
@@ -112,15 +104,15 @@ const COURSES = [
         href: "https://gabe0563.github.io/Windows11Labs/Chapter1_Deep_Dive_Supplement.md", // ← placeholder
         instructorOnly: false
       },
-      {
-        title: "Lab 1: Desktop, Processes & Shell",
-        description: "Home + institution-computer versions",
-        type: "Lab",
+        {
+        title: "Chapter 1 Quiz",
+        description: "15 questions, instant feedback",
+        type: "Quiz",
         week: "1",
-        updated: "2026-08-06",
-        href: "https://gabe0563.github.io/Windows11Labs/Lab1_Windows11_Desktop_Processes_Shell.docx", // ← placeholder
+        updated: "2026-08-13",
+        href: "Chapter1_Quiz.html",   // or the full URL if it's in a different repo
         instructorOnly: false
-      },
+      }
       {
         title: "Lab 1 Answer Key & Rubric",
         description: "Grading guide — instructor use",
