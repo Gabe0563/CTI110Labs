@@ -96,12 +96,12 @@ const COURSES = [
         reinstructorOnly: false
 },
       {
-        title: "Chapter 1 Deep Dive Supplement",
+        title: "NOS 130 Chapter 1 Deep Dive Supplement",
         description: "Lecture notes beyond the textbook",
         type: "Reading",
         week: "1",
         updated: "2026-08-03",
-        href: "https://gabe0563.github.io/Windows11Labs/Chapter1_Deep_Dive_Supplement.md", // ← placeholder
+        href: "Windows_11_Technical_Support_Reference1.docx", // ← placeholder
         instructorOnly: false
       },
         {
