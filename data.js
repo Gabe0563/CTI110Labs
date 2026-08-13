@@ -69,6 +69,15 @@ const COURSES = [
         updated: "2026-07-28",
         href: "Chapter1_TroubleShooting.html",
         instructorOnly: false
+      },
+       {
+        title: "Chapter 1 Quiz",
+        description: "15 questions, instant feedback",
+        type: "Quiz",
+        week: "1",
+        updated: "2026-08-13",
+        href: "Chapter1_Quiz.html",   // or the full URL if it's in a different repo
+        instructorOnly: false
       }
     ]
   },
