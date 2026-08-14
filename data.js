@@ -88,9 +88,8 @@ const COURSES = [
         updated: "2026-08-13",
         href: "word-basics-training-module.html",
         reinstructorOnly: false
-},
-
-
+}
+    ]
 
   },
 
