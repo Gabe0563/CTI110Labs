@@ -73,6 +73,26 @@ const COURSES = [
      
     ]
   },
+  {
+    id: "MicrosoftOffice",
+    code: "CIS 110",
+    name: "Introduction to Computers",
+    accent: "Green",
+    description: "Microsoft Office Solutions",
+    assignments: [
+     {
+       title: "Microsoft Word Test",
+       description: "Microsoft Word",
+       type: "Lab",
+       week: "—",
+        updated: "2026-08-13",
+        href: "word-basics-training-module.html",
+        reinstructorOnly: false
+},
+
+
+
+  },
 
   /* ------------------------------------------------------------
      EXAMPLE: a second class living in its OWN separate repo.
