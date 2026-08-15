@@ -79,6 +79,15 @@ const COURSES = [
         href: "ai-fundamentals-quiz.html",
         instructorOnly: false
       },
+        {
+        title: "Ai Prompt Engineering",
+        description: "Quiz Checking understanding on prompt engineering",
+        type: "Quiz",
+        week: "1",
+        updated: "2026-07-28",
+        href: "prompt-engineering-lab.html",
+        instructorOnly: false
+      },
      
     ]
   },
