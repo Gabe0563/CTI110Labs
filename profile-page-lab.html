@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTI 110 · Lab — Profile Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1B1F27;
+    --ink-soft: #5B5F6B;
+    --accent: #E8A33D;
+    --accent-soft: #FCEACB;
+    --success: #2F9E44;
+    --success-soft: #E6F7EA;
+    --danger: #C4453C;
+    --code-bg: #10141C;
+    --code-text: #D8DEE9;
+    --border: #E0DCD1;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Space Grotesk',sans-serif; line-height:1.5; }
+  code, .mono{ font-family:'JetBrains Mono',monospace; }
+
+  header{ padding:28px 40px 22px; border-bottom:2px solid var(--ink); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; }
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase; }
+  h1.title{ margin:4px 0 0; font-size:28px; font-weight:700; }
+  h1.title .tag{ color:var(--accent); font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .course-badge{ font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--ink); color:var(--bg); padding:6px 12px; border-radius:3px; }
+
+  main{ display:grid; grid-template-columns: 340px 1fr; gap:0; min-height: calc(100vh - 96px); }
+  @media (max-width: 900px){ main{ grid-template-columns: 1fr; } }
+
+  .panel-instructions{ padding:28px 28px 40px; border-right:2px solid var(--ink); }
+  @media (max-width:900px){ .panel-instructions{ border-right:none; border-bottom:2px solid var(--ink); } }
+  .panel-instructions h2{ font-size:15px; text-transform:uppercase; letter-spacing:.06em; margin:0 0 14px; }
+  .panel-instructions p{ color:var(--ink-soft); font-size:14px; }
+
+  .goal-box{ background:var(--accent-soft); border:1px solid var(--accent); border-radius:4px; padding:14px 16px; font-size:14px; margin-bottom:24px; }
+  .goal-box strong{ display:block; margin-bottom:4px; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:#8a5b12;}
+
+  .inspector-list{ list-style:none; margin:0; padding:0; }
+  .inspector-list li{ display:flex; align-items:flex-start; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); font-size:13.5px; }
+  .tag-chip{ font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--ink); color:var(--bg); padding:3px 7px; border-radius:3px; white-space:nowrap; margin-top:1px; }
+  .status-dot{ width:10px; height:10px; border-radius:50%; background:#D8D4C6; flex-shrink:0; margin-top:4px; transition:background .2s ease; }
+  .inspector-list li.pass .status-dot{ background:var(--success); }
+  .inspector-list li.fail .status-dot{ background:var(--danger); }
+  .inspector-list li.pass .task-text{ color:var(--ink-soft); text-decoration:line-through; }
+
+  .panel-work{ padding:28px 32px 40px; }
+  .work-block{ margin-bottom:22px; }
+  .work-label{ font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:8px; display:block; }
+  textarea#editor{
+    width:100%; min-height:420px; background:var(--code-bg); color:var(--code-text);
+    font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.6;
+    border:none; border-radius:6px; padding:18px; resize:vertical; tab-size:2; white-space:pre;
+  }
+  textarea#editor:focus{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  iframe#preview{ width:100%; height:280px; border:1px solid var(--border); border-radius:6px; background:#fff; }
+
+  .btn-row{ display:flex; gap:12px; align-items:center; margin-top:18px; flex-wrap:wrap; }
+  button#checkBtn{ font-family:'JetBrains Mono',monospace; font-size:14px; background:var(--ink); color:var(--bg); border:none; padding:12px 22px; border-radius:4px; cursor:pointer; }
+  button#checkBtn:hover{ background:#333; }
+  button#resetBtn{ font-family:'JetBrains Mono',monospace; font-size:13px; background:transparent; color:var(--ink-soft); border:1px solid var(--border); padding:11px 16px; border-radius:4px; cursor:pointer; }
+  button#resetBtn:hover{ border-color: var(--ink); color:var(--ink); }
+  .score-readout{ font-family:'JetBrains Mono',monospace; font-size:14px; padding:8px 14px; border-radius:4px; background:var(--border); }
+  .score-readout.complete{ background:var(--success-soft); color:var(--success); border:1px solid var(--success); }
+
+  .banner{ margin-top:18px; padding:14px 16px; border-radius:5px; font-size:14px; display:none; }
+  .banner.show{ display:block; }
+  .banner.win{ background:var(--success-soft); border:1px solid var(--success); color:#1e6b30; }
+
+  footer{ text-align:center; font-size:12px; color:var(--ink-soft); padding:20px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">CTI 110 &middot; Web Foundations</div>
+    <h1 class="title"><span class="tag">&lt;lab n="03"&gt;</span> Build Your Profile Page</h1>
+  </div>
+  <div class="course-badge">auto-graded</div>
+</header>
+
+<main>
+  <section class="panel-instructions">
+    <div class="goal-box">
+      <strong>Objective</strong>
+      Build a personal profile page using everything from Week 1: structure with HTML, style with CSS.
+    </div>
+
+    <h2>Instructions</h2>
+    <p>Write your full page — HTML <em>and</em> a &lt;style&gt; block for your CSS — in the single editor on the right. The preview updates live.</p>
+    <p>Your page needs a name, a bio, a photo, a hobbies list, at least one favorite-website link, a contact link, and CSS styling that uses both a class and an id selector.</p>
+
+    <h2 style="margin-top:26px;">Requirement Checklist</h2>
+    <ul class="inspector-list" id="inspectorList">
+      <li data-check="h1"><span class="status-dot"></span><span class="tag-chip">&lt;h1&gt;</span><span class="task-text">Your name as a heading</span></li>
+      <li data-check="bio"><span class="status-dot"></span><span class="tag-chip">&lt;p&gt;</span><span class="task-text">A short biography paragraph</span></li>
+      <li data-check="img"><span class="status-dot"></span><span class="tag-chip">alt=""</span><span class="task-text">A profile image with real alt text</span></li>
+      <li data-check="list"><span class="status-dot"></span><span class="tag-chip">&lt;ul&gt;/&lt;ol&gt;</span><span class="task-text">A hobbies list with 2+ items</span></li>
+      <li data-check="site-link"><span class="status-dot"></span><span class="tag-chip">&lt;a href&gt;</span><span class="task-text">A link to a favorite website</span></li>
+      <li data-check="contact-link"><span class="status-dot"></span><span class="tag-chip">mailto:</span><span class="task-text">A clickable contact/email link</span></li>
+      <li data-check="class-selector"><span class="status-dot"></span><span class="tag-chip">.class</span><span class="task-text">A class attribute styled by a matching CSS class selector</span></li>
+      <li data-check="id-selector"><span class="status-dot"></span><span class="tag-chip">#id</span><span class="task-text">An id attribute styled by a matching CSS id selector</span></li>
+      <li data-check="color"><span class="status-dot"></span><span class="tag-chip">color</span><span class="task-text">A custom color or background-color in your CSS</span></li>
+      <li data-check="spacing"><span class="status-dot"></span><span class="tag-chip">margin/padding/border</span><span class="task-text">Custom spacing or a border somewhere on the page</span></li>
+    </ul>
+  </section>
+
+  <section class="panel-work">
+    <div class="work-block">
+      <label class="work-label" for="editor">Your HTML + CSS</label>
+      <textarea id="editor" spellcheck="false">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;My Profile Page&lt;/title&gt;
+  &lt;style&gt;
+    /* Write your CSS here.
+       Try at least one element selector, one .class selector,
+       and one #id selector. */
+
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;h1&gt;&lt;/h1&gt;
+
+  &lt;img src="" alt=""&gt;
+
+  &lt;p&gt;&lt;/p&gt;
+
+  &lt;h2&gt;My Hobbies&lt;/h2&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;h2&gt;Favorite Websites&lt;/h2&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href=""&gt;&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+
+  &lt;h2&gt;Contact Me&lt;/h2&gt;
+  &lt;p&gt;&lt;a href="mailto:"&gt;Email Me&lt;/a&gt;&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</textarea>
+    </div>
+
+    <div class="work-block">
+      <label class="work-label">Live Preview</label>
+      <iframe id="preview" title="Live preview of your page"></iframe>
+    </div>
+
+    <div class="btn-row">
+      <button id="checkBtn">Check My Work</button>
+      <button id="resetBtn">Reset to Starter</button>
+      <span class="score-readout" id="scoreReadout">0 / 10 requirements met</span>
+    </div>
+
+    <div class="banner win" id="winBanner">
+      All 10 requirements met. Your profile page has solid structure and real CSS styling — nice work.
+    </div>
+  </section>
+</main>
+
+<footer>CTI 110 — Profile Page Lab &middot; Score is calculated locally in your browser</footer>
+
+<script>
+  const STARTER = document.getElementById('editor').value;
+
+  const editor = document.getElementById('editor');
+  const preview = document.getElementById('preview');
+  const checkBtn = document.getElementById('checkBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const scoreReadout = document.getElementById('scoreReadout');
+  const winBanner = document.getElementById('winBanner');
+  const items = document.querySelectorAll('#inspectorList li');
+
+  function renderPreview(html){
+    const doc = preview.contentDocument || preview.contentWindow.document;
+    doc.open();
+    doc.write(html);
+    doc.close();
+  }
+
+  function escapeRegExp(str){
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function gradePage(rawHtml){
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(rawHtml, 'text/html');
+    const results = {};
+
+    // 1. h1 with real text
+    const h1 = doc.querySelector('h1');
+    results.h1 = !!h1 && h1.textContent.trim().length > 0;
+
+    // 2. at least one non-empty <p> (excluding the contact-link paragraph, which is fine to also count)
+    const paragraphs = Array.from(doc.querySelectorAll('p'));
+    results.bio = paragraphs.some(p => p.textContent.trim().length > 10);
+
+    // 3. img with real alt text
+    const img = doc.querySelector('img');
+    results.img = !!img && !!img.getAttribute('alt') && img.getAttribute('alt').trim().length > 0;
+
+    // 4. list with 2+ items
+    const list = doc.querySelector('ul, ol');
+    results.list = !!list && list.querySelectorAll('li').length >= 2;
+
+    // 5. a favorite-website link (non-mailto)
+    const links = Array.from(doc.querySelectorAll('a[href]'));
+    results['site-link'] = links.some(a => {
+      const href = a.getAttribute('href').trim();
+      return href.length > 0 && !href.toLowerCase().startsWith('mailto:');
+    });
+
+    // 6. a mailto contact link
+    results['contact-link'] = links.some(a => {
+      const href = a.getAttribute('href').trim().toLowerCase();
+      return href.startsWith('mailto:') && href.length > 'mailto:'.length;
+    });
+
+    // CSS checks — pull the raw <style> block content
+    const styleEl = doc.querySelector('style');
+    const css = styleEl ? styleEl.textContent : '';
+
+    // 7. a class attribute in the HTML matched by a .classname selector in the CSS
+    const classNames = new Set();
+    doc.querySelectorAll('[class]').forEach(el => {
+      el.getAttribute('class').split(/\s+/).filter(Boolean).forEach(c => classNames.add(c));
+    });
+    results['class-selector'] = Array.from(classNames).some(name =>
+      new RegExp('\\.' + escapeRegExp(name) + '\\b').test(css)
+    );
+
+    // 8. an id attribute in the HTML matched by an #idname selector in the CSS
+    const idNames = new Set();
+    doc.querySelectorAll('[id]').forEach(el => {
+      const idVal = el.getAttribute('id').trim();
+      if (idVal) idNames.add(idVal);
+    });
+    results['id-selector'] = Array.from(idNames).some(name =>
+      new RegExp('#' + escapeRegExp(name) + '\\b').test(css)
+    );
+
+    // 9. a color or background-color declaration
+    results.color = /\b(color|background-color)\s*:\s*[^;]+;/i.test(css);
+
+    // 10. spacing or border declaration
+    results.spacing = /\b(margin|padding|border)\b[^:]*:\s*[^;]+;/i.test(css);
+
+    return results;
+  }
+
+  function updateUI(results){
+    let passed = 0;
+    items.forEach(li => {
+      const key = li.dataset.check;
+      const ok = results[key];
+      li.classList.toggle('pass', !!ok);
+      li.classList.toggle('fail', !ok);
+      if (ok) passed++;
+    });
+
+    const total = items.length;
+    scoreReadout.textContent = `${passed} / ${total} requirements met`;
+    scoreReadout.classList.toggle('complete', passed === total);
+    winBanner.classList.toggle('show', passed === total);
+
+    // Hook point: a real deployment (SCORM or LTI) would report the score here.
+
+    return { passed, total };
+  }
+
+  function runCheck(){
+    const html = editor.value;
+    renderPreview(html);
+    const results = gradePage(html);
+    updateUI(results);
+  }
+
+  checkBtn.addEventListener('click', runCheck);
+  editor.addEventListener('input', () => renderPreview(editor.value));
+  resetBtn.addEventListener('click', () => {
+    editor.value = STARTER;
+    renderPreview(editor.value);
+    items.forEach(li => li.classList.remove('pass', 'fail'));
+    scoreReadout.textContent = '0 / 10 requirements met';
+    scoreReadout.classList.remove('complete');
+    winBanner.classList.remove('show');
+  });
+
+  renderPreview(editor.value);
+</script>
+
+</body>
+</html>
