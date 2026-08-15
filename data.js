@@ -73,7 +73,7 @@ const COURSES = [
         {
         title: "Ai Fundamentals Quiz 1",
         description: "Quiz Checking understanding on Ai fundamentals",
-        type: "QUiz",
+        type: "Quiz",
         week: "1",
         updated: "2026-07-28",
         href: "ai-fundamentals-quiz.html",
