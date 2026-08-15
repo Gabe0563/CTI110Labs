@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTI 110 · Mastering the Prompt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1B1F27;
+    --ink-soft: #5B5F6B;
+    --accent: #4C51BF;
+    --accent-soft: #ECEDFB;
+    --success: #2F9E44;
+    --success-soft: #E6F7EA;
+    --danger: #C4453C;
+    --danger-soft: #FBE9E7;
+    --border: #E0DCD1;
+    --card: #FFFFFF;
+    --code-bg: #10141C;
+    --code-text: #D8DEE9;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk',sans-serif;
+    line-height:1.5;
+  }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+
+  header{
+    padding:28px 40px 22px;
+    border-bottom:2px solid var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  h1.title{ margin:4px 0 0; font-size:26px; font-weight:700; }
+  h1.title .tag{ color:var(--accent); font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .course-badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    background:var(--ink);
+    color:var(--bg);
+    padding:6px 12px;
+    border-radius:3px;
+  }
+
+  main{ max-width:820px; margin:0 auto; padding:32px 24px 60px; }
+
+  .intro-note{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    border-radius:6px;
+    padding:14px 16px;
+    margin-bottom:8px;
+  }
+  .intro-note strong{ color:var(--ink); }
+
+  .section-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--accent);
+    margin:36px 0 14px;
+  }
+
+  /* ---- MC (Part A) ---- */
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:20px 22px;
+    margin-bottom:16px;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .card.correct{ border-color:var(--success); background:var(--success-soft); }
+  .card.incorrect{ border-color:var(--danger); background:var(--danger-soft); }
+  .q-index{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); margin-bottom:6px; display:block; }
+  .q-text{ font-size:15.5px; font-weight:600; margin:0 0 14px; }
+  .options{ display:flex; flex-direction:column; gap:8px; }
+  .option{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px; border:1px solid var(--border); border-radius:6px;
+    cursor:pointer; font-size:14px; background:var(--bg);
+  }
+  .option:hover{ border-color:var(--accent); }
+  .option.selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .card.correct .option.selected{ border-color:var(--success); background:var(--success-soft); }
+  .card.incorrect .option.selected{ border-color:var(--danger); background:var(--danger-soft); }
+  .card.incorrect .option.answer-key{ border-color:var(--success); background:var(--success-soft); }
+  .explain{ display:none; font-size:13px; color:var(--ink-soft); margin-top:12px; padding-top:12px; border-top:1px dashed var(--border); }
+  .card.checked .explain{ display:block; }
+
+  /* ---- Prompt workshop (Part B) ---- */
+  .prompt-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:22px;
+    margin-bottom:20px;
+  }
+  .prompt-card.complete{ border-color:var(--success); }
+  .scenario-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--accent);
+    margin-bottom:6px;
+    display:block;
+  }
+  .weak-prompt{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13.5px;
+    background:var(--code-bg);
+    color:var(--code-text);
+    padding:12px 14px;
+    border-radius:6px;
+    margin:6px 0 16px;
+  }
+  .weak-prompt::before{ content:"✗ Weak: "; color:var(--danger); font-weight:700; }
+  label.work-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+    display:block;
+  }
+  textarea.rewrite-input{
+    width:100%;
+    min-height:110px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:14.5px;
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:6px;
+    resize:vertical;
+  }
+  textarea.rewrite-input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+
+  .pillar-list{ list-style:none; margin:14px 0 0; padding:0; display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:6px; }
+  .pillar-list li{ display:flex; align-items:center; gap:8px; font-size:13px; padding:4px 0; }
+  .status-dot{ width:9px; height:9px; border-radius:50%; background:#D8D4C6; flex-shrink:0; transition:background .2s ease; }
+  .pillar-list li.pass .status-dot{ background:var(--success); }
+  .pillar-list li.fail .status-dot{ background:var(--danger); }
+  .pillar-list li.pass .pillar-text{ color:var(--ink-soft); }
+  .tag-chip{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    background:var(--ink);
+    color:var(--bg);
+    padding:2px 7px;
+    border-radius:3px;
+  }
+
+  .feedback-box{
+    display:none;
+    margin-top:14px;
+    padding:12px 14px;
+    border-left:3px solid var(--accent);
+    background:var(--accent-soft);
+    border-radius:0 6px 6px 0;
+    font-size:13px;
+  }
+  .feedback-box.show{ display:block; }
+  .feedback-box.all-pass{ border-left-color:var(--success); background:var(--success-soft); }
+  .feedback-box ul{ margin:6px 0 0; padding-left:18px; }
+  .feedback-box li{ margin-bottom:4px; }
+  .feedback-box li strong{ color:var(--ink); }
+
+  .summary-panel{
+    display:none;
+    background:var(--card);
+    border:1px solid var(--accent);
+    border-radius:8px;
+    padding:16px 18px;
+    margin-bottom:18px;
+    font-size:13.5px;
+  }
+  .summary-panel.show{ display:block; }
+  .summary-panel h3{
+    margin:0 0 8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--accent);
+  }
+  .summary-panel ul{ margin:0; padding-left:18px; }
+  .summary-panel li{ margin-bottom:4px; }
+
+  .sticky-bar{
+    position:sticky; bottom:0; background:var(--bg);
+    border-top:2px solid var(--ink); padding:16px 24px;
+    display:flex; align-items:center; justify-content:center;
+    gap:14px; flex-wrap:wrap; margin-top:20px;
+  }
+  button#checkBtn{
+    font-family:'JetBrains Mono',monospace; font-size:14px;
+    background:var(--ink); color:var(--bg); border:none;
+    padding:12px 24px; border-radius:4px; cursor:pointer;
+  }
+  button#checkBtn:hover{ background:#333; }
+  button#resetBtn{
+    font-family:'JetBrains Mono',monospace; font-size:13px;
+    background:transparent; color:var(--ink-soft); border:1px solid var(--border);
+    padding:11px 16px; border-radius:4px; cursor:pointer;
+  }
+  button#resetBtn:hover{ border-color:var(--ink); color:var(--ink); }
+  .score-readout{
+    font-family:'JetBrains Mono',monospace; font-size:14px;
+    padding:8px 14px; border-radius:4px; background:var(--border);
+  }
+  .score-readout.complete{ background:var(--success-soft); color:var(--success); border:1px solid var(--success); }
+
+  footer{ text-align:center; font-size:12px; color:var(--ink-soft); padding:20px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">CTI 110 &middot; AI Fundamentals</div>
+    <h1 class="title"><span class="tag">&lt;lab n="03"&gt;</span> Mastering the Prompt</h1>
+  </div>
+  <div class="course-badge">auto-graded</div>
+</header>
+
+<main>
+  <p class="intro-note">
+    <strong>How this is graded:</strong> Part A is graded like a normal quiz. Part B checks whether your rewritten prompts
+    <em>structurally</em> include the Five Pillars (Context, Task, Audience, Format, Constraints) — it cannot judge writing quality
+    or creativity. Your instructor may still review your actual rewrites separately for that.
+  </p>
+
+  <div class="section-label">Part A &middot; Concept Check</div>
+  <div id="mcContainer"></div>
+
+  <div class="section-label">Part B &middot; Prompt Rewrite Workshop</div>
+  <p style="font-size:13.5px;color:var(--ink-soft);margin-top:-8px;">
+    Each prompt below is weak. Rewrite it using the <strong>ROLE + CONTEXT + TASK + CONSTRAINTS + OUTPUT FORMAT</strong> formula so it hits all five pillars.
+  </p>
+  <div class="summary-panel" id="summaryPanel">
+    <h3>Your feedback</h3>
+    <div id="summaryContent"></div>
+  </div>
+  <div id="promptContainer"></div>
+</main>
+
+<div class="sticky-bar">
+  <button id="checkBtn">Check My Work</button>
+  <button id="resetBtn">Reset</button>
+  <span class="score-readout" id="scoreReadout">0 / 21 checks passed</span>
+</div>
+
+<footer>CTI 110 — Mastering the Prompt &middot; Score is calculated locally in your browser</footer>
+
+<script>
+/* ---------------------------------------------------------
+   PART A — CONCEPT CHECK
+--------------------------------------------------------- */
+const mcQuestions = [
+  {
+    id: 'mc1',
+    text: 'Which of the following best reflects the "Five-Pillar Framework" for a high-value prompt?',
+    options: [
+      'Context, Task, Audience, Desired Format, Constraints',
+      'Speed, Accuracy, Length, Tone, Cost',
+      'Grammar, Spelling, Punctuation, Formatting, Length',
+      'Input, Output, Model, Weights, Tokens'
+    ],
+    correctIndex: 0,
+    explain: 'The reading defines the five pillars as Context, Task, Audience, Desired Format, and Constraints.'
+  },
+  {
+    id: 'mc2',
+    text: 'A prompt asks the AI to explain networking to "a first-year community college student" using "one real-world analogy." Which pillar is this primarily strengthening?',
+    options: [
+      'Constraints',
+      'Audience',
+      'Desired Format',
+      'Context only, nothing else'
+    ],
+    correctIndex: 1,
+    explain: 'Specifying who the output is for (a first-year student) triggers the "Audience" pillar, which changes vocabulary and depth.'
+  },
+  {
+    id: 'mc3',
+    text: 'Why does the reading call Generative AI a "stochastic parrot" in the Windows Server 2025 RAM example?',
+    options: [
+      'Because it copies text word-for-word from Wikipedia.',
+      'Because it retrieves facts from a live, constantly updated database.',
+      'Because it performs linguistic prediction based on probability patterns, not knowledge retrieval — so it can sound confident while being wrong.',
+      'Because it refuses to answer questions about hardware.'
+    ],
+    correctIndex: 2,
+    explain: 'The AI predicts plausible-sounding text; it does not "know" facts the way a database does, especially past its knowledge cutoff.'
+  },
+  {
+    id: 'mc4',
+    text: 'According to the reading, what is the correct way to verify an AI\'s technical claim, like a hardware requirement?',
+    options: [
+      'Ask the same AI the same question again in a new chat.',
+      'Ask a different AI model and see if it agrees.',
+      'Consult official, authoritative sources such as vendor documentation (e.g., Microsoft Learn) or Hardware Compatibility Lists.',
+      'Trust it if the answer sounds detailed and confident.'
+    ],
+    correctIndex: 2,
+    explain: 'Verification should never involve re-asking the AI — it means checking ground truth in official documentation.'
+  },
+  {
+    id: 'mc5',
+    text: 'In the "Firewall Outage Scenario," an employee submits an AI-generated firewall configuration without checking it, and it causes an outage. Per the reading, who is responsible?',
+    options: [
+      'The AI model, since it generated the faulty configuration.',
+      'The AI company that built the tool.',
+      'The employee, because the failure is the abdication of human oversight, not the use of AI itself.',
+      'No one — it was an unavoidable technical error.'
+    ],
+    correctIndex: 2,
+    explain: 'The reading is explicit: "the employee — not the AI — is responsible." Verification is mandatory, and accountability stays with the human.'
+  },
+  {
+    id: 'mc6',
+    text: 'Which of these is a stated ethical rule in the reading regarding privacy?',
+    options: [
+      'It is fine to enter proprietary infrastructure data into a public AI tool as long as the results are useful.',
+      'Professionals must never enter sensitive or proprietary infrastructure data into public AI tools.',
+      'Privacy only matters for personal data, not company data.',
+      'AI tools automatically delete anything entered into them.'
+    ],
+    correctIndex: 1,
+    explain: 'The reading states information entered into an AI system is processed and potentially stored, so sensitive/proprietary data should never go into public tools.'
+  }
+];
+
+const mcContainer = document.getElementById('mcContainer');
+mcQuestions.forEach((q, qi) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.qid = q.id;
+  card.innerHTML = `
+    <span class="q-index">Question ${qi + 1}</span>
+    <p class="q-text">${q.text}</p>
+    <div class="options">
+      ${q.options.map((opt, oi) => `
+        <label class="option" data-opt-index="${oi}">
+          <input type="radio" name="${q.id}" value="${oi}">
+          <span>${opt}</span>
+        </label>
+      `).join('')}
+    </div>
+    <div class="explain">${q.explain}</div>
+  `;
+  mcContainer.appendChild(card);
+  card.querySelectorAll('.option').forEach(optEl => {
+    optEl.addEventListener('click', () => {
+      card.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      optEl.classList.add('selected');
+      optEl.querySelector('input').checked = true;
+    });
+  });
+});
+
+/* ---------------------------------------------------------
+   PART B — PROMPT REWRITE WORKSHOP
+   Heuristic, keyword-based structural checks per pillar.
+   This is intentionally conservative: it looks for *signals*
+   that a pillar was addressed, not whether the writing is good.
+--------------------------------------------------------- */
+const promptExercises = [
+  {
+    id: 'p1',
+    scenario: 'Networking',
+    weak: 'Explain networking.'
+  },
+  {
+    id: 'p2',
+    scenario: 'Professional Communication',
+    weak: 'Write an email to my professor.'
+  },
+  {
+    id: 'p3',
+    scenario: 'Troubleshooting',
+    weak: "My computer won't connect. Fix it."
+  }
+];
+
+const PILLARS = [
+  { key: 'context', label: 'Context', chip: 'Context',
+    test: (text) => text.trim().length >= 50,
+    tip: "Add real detail — what's the situation, tool, environment, or scenario the AI needs to know about before it can help?" },
+  { key: 'task', label: 'Task is a clear action', chip: 'Task',
+    test: (text) => /\b(explain|summarize|write|draft|give|identify|troubleshoot|create|list|analyze|generate|provide|walk me through|show)\b/i.test(text),
+    tip: 'State the specific action you want in plain terms — explain, summarize, troubleshoot, draft, list, etc.' },
+  { key: 'audience', label: 'Audience / role specified', chip: 'Audience',
+    test: (text) => /\b(i am|i'm|as a|for a|for an|audience|beginner|professional|student|executive|non-technical|technical|customer|manager|instructor|first-year)\b/i.test(text),
+    tip: "Say who this is for — a beginner, a professional, a specific role — so the AI adjusts vocabulary and depth." },
+  { key: 'format', label: 'Desired format specified', chip: 'Format',
+    test: (text) => /\b(table|list|email|bullet|bullets|steps|markdown|paragraph|summary|checklist|outline)\b/i.test(text),
+    tip: 'Tell the AI what shape the answer should take — a table, a numbered list, an email, a short paragraph.' },
+  { key: 'constraints', label: 'Constraints included', chip: 'Constraints',
+    test: (text) => /(\d+\s*(words|minutes|steps|questions|sentences))|(\bdo not\b|\bdon't\b|\bwithout\b|\bmust\b|\bonly\b|\bno more than\b|\bunder\b|\bbefore\b|\buntil\b)/i.test(text),
+    tip: "Add a real limit — a word count, a 'do not' rule, a number of steps, a deadline." }
+];
+
+const promptContainer = document.getElementById('promptContainer');
+promptExercises.forEach(ex => {
+  const card = document.createElement('div');
+  card.className = 'prompt-card';
+  card.dataset.pid = ex.id;
+  card.innerHTML = `
+    <span class="scenario-label">${ex.scenario}</span>
+    <div class="weak-prompt">${ex.weak}</div>
+    <label class="work-label" for="input-${ex.id}">Your rewritten prompt</label>
+    <textarea class="rewrite-input" id="input-${ex.id}" placeholder="Rewrite this using ROLE + CONTEXT + TASK + CONSTRAINTS + OUTPUT FORMAT..."></textarea>
+    <ul class="pillar-list">
+      ${PILLARS.map(p => `
+        <li data-pillar="${p.key}">
+          <span class="status-dot"></span>
+          <span class="tag-chip">${p.chip}</span>
+          <span class="pillar-text">${p.label}</span>
+        </li>
+      `).join('')}
+    </ul>
+    <div class="feedback-box" id="feedback-${ex.id}"></div>
+  `;
+  promptContainer.appendChild(card);
+});
+
+/* ---------------------------------------------------------
+   GRADING
+--------------------------------------------------------- */
+const checkBtn = document.getElementById('checkBtn');
+const resetBtn = document.getElementById('resetBtn');
+const scoreReadout = document.getElementById('scoreReadout');
+
+const totalItems = mcQuestions.length + (promptExercises.length * PILLARS.length);
+
+function gradeAll(){
+  let correct = 0;
+  const pillarMissCounts = {};
+
+  mcQuestions.forEach(q => {
+    const card = document.querySelector(`.card[data-qid="${q.id}"]`);
+    const selected = card.querySelector('input[type="radio"]:checked');
+    card.classList.add('checked');
+    card.classList.remove('correct', 'incorrect');
+    card.querySelectorAll('.option').forEach(o => o.classList.remove('answer-key'));
+
+    if (selected && parseInt(selected.value, 10) === q.correctIndex){
+      card.classList.add('correct');
+      correct++;
+    } else {
+      card.classList.add('incorrect');
+      const correctOpt = card.querySelector(`.option[data-opt-index="${q.correctIndex}"]`);
+      if (correctOpt) correctOpt.classList.add('answer-key');
+    }
+  });
+
+  promptExercises.forEach(ex => {
+    const card = document.querySelector(`.prompt-card[data-pid="${ex.id}"]`);
+    const text = card.querySelector('textarea').value || '';
+    const feedbackBox = document.getElementById(`feedback-${ex.id}`);
+    let allPass = true;
+    const missing = [];
+
+    PILLARS.forEach(p => {
+      const li = card.querySelector(`li[data-pillar="${p.key}"]`);
+      const pass = p.test(text);
+      li.classList.toggle('pass', pass);
+      li.classList.toggle('fail', !pass);
+      if (pass) {
+        correct++;
+      } else {
+        allPass = false;
+        missing.push(p);
+        pillarMissCounts[p.key] = (pillarMissCounts[p.key] || 0) + 1;
+      }
+    });
+
+    card.classList.toggle('complete', allPass);
+
+    feedbackBox.classList.add('show');
+    feedbackBox.classList.toggle('all-pass', allPass);
+    if (allPass) {
+      feedbackBox.innerHTML = `All five pillars are present. This is ready for a final read-through before you submit.`;
+    } else if (text.trim().length === 0) {
+      feedbackBox.innerHTML = `You haven't rewritten this one yet.`;
+    } else {
+      feedbackBox.innerHTML = `
+        <strong>Still missing ${missing.length} pillar${missing.length > 1 ? 's' : ''}:</strong>
+        <ul>
+          ${missing.map(p => `<li><strong>${p.chip}:</strong> ${p.tip}</li>`).join('')}
+        </ul>
+      `;
+    }
+  });
+
+  // Aggregate summary: call out any pillar the student missed on 2+ of the 3 prompts
+  const summaryPanel = document.getElementById('summaryPanel');
+  const summaryContent = document.getElementById('summaryContent');
+  const recurring = PILLARS.filter(p => (pillarMissCounts[p.key] || 0) >= 2);
+
+  summaryPanel.classList.add('show');
+  if (recurring.length === 0) {
+    summaryContent.innerHTML = `No repeated gaps — nice work covering all five pillars consistently across your rewrites.`;
+  } else {
+    summaryContent.innerHTML = `
+      <p style="margin:0 0 8px;">You missed the same pillar${recurring.length > 1 ? 's' : ''} on more than one prompt — that's usually the fastest thing to fix:</p>
+      <ul>
+        ${recurring.map(p => `<li><strong>${p.chip}:</strong> ${p.tip}</li>`).join('')}
+      </ul>
+    `;
+  }
+
+  scoreReadout.textContent = `${correct} / ${totalItems} checks passed`;
+  scoreReadout.classList.toggle('complete', correct === totalItems);
+
+  // Hook point: a real deployment (SCORM or LTI) would report the score
+  // here, e.g. ScormAPI.setScoreAndStatus(correct, totalItems, 70);
+
+  return { correct, total: totalItems };
+}
+
+function resetAll(){
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('correct','incorrect','checked'));
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected','answer-key'));
+  document.querySelectorAll('.prompt-card').forEach(c => c.classList.remove('complete'));
+  document.querySelectorAll('.rewrite-input').forEach(t => t.value = '');
+  document.querySelectorAll('.pillar-list li').forEach(li => li.classList.remove('pass','fail'));
+  document.querySelectorAll('.feedback-box').forEach(f => { f.classList.remove('show','all-pass'); f.innerHTML = ''; });
+  document.getElementById('summaryPanel').classList.remove('show');
+  document.getElementById('summaryContent').innerHTML = '';
+  scoreReadout.textContent = `0 / ${totalItems} checks passed`;
+  scoreReadout.classList.remove('complete');
+}
+
+checkBtn.addEventListener('click', gradeAll);
+resetBtn.addEventListener('click', resetAll);
+</script>
+
+</body>
+</html>
