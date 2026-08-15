@@ -70,6 +70,15 @@ const COURSES = [
         href: "Chapter1_TroubleShooting.html",
         instructorOnly: false
       },
+        {
+        title: "Ai Fundamentals Quiz 1",
+        description: "Quiz Checking understanding on Ai fundamentals",
+        type: "QUiz",
+        week: "1",
+        updated: "2026-07-28",
+        href: "ai-fundamentals-quiz.html",
+        instructorOnly: false
+      },
      
     ]
   },
