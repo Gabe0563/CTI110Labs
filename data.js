@@ -61,6 +61,25 @@ const COURSES = [
         href: "Chapter1LabAssignment.html",  // lives right here in this repo
         instructorOnly: false
       },
+        {
+        title: "HTML & CSS Quiz 1",
+        description: "Quiz Checking understanding on HTMl & CSS Fundamentals",
+        type: "Quiz",
+        week: "1",
+        updated: "2026-07-28",
+        href: "week01-html-css-quiz.html",
+        instructorOnly: false
+      },
+      {
+        title: "Profile Page Design",
+        description: "Students will design a Profile ",
+        type: "Lab",
+        week: "1",
+        updated: "2026-07-28",              // ← set to the real date if you want it exact
+        href: "profile-page-lab.html",  // lives right here in this repo
+        instructorOnly: false
+      },
+
       {
         title: "Chapter 1 Troubleshooting",
         description: "Diagnosing and fixing common issues",
