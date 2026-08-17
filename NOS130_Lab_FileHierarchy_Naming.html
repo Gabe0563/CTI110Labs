@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOS 130 · Lab — Choosing the Best File Hierarchy &amp; Naming Convention</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1B1F27;
+    --ink-soft: #5B5F6B;
+    --accent: #4F6FE8;
+    --accent-soft: #E7ECFC;
+    --success: #2F9E44;
+    --success-soft: #E6F7EA;
+    --danger: #C4453C;
+    --danger-soft: #FBE9E7;
+    --code-bg: #10141C;
+    --code-text: #D8DEE9;
+    --border: #E0DCD1;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk',sans-serif;
+    line-height:1.5;
+  }
+  code, .mono{ font-family:'JetBrains Mono',monospace; }
+
+  header{
+    padding:28px 40px 22px;
+    border-bottom:2px solid var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  h1.title{
+    margin:4px 0 0;
+    font-size:26px;
+    font-weight:700;
+  }
+  h1.title .tag{
+    color:var(--accent);
+    font-family:'JetBrains Mono',monospace;
+    font-weight:500;
+  }
+  .course-badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    background:var(--ink);
+    color:var(--bg);
+    padding:6px 12px;
+    border-radius:3px;
+  }
+
+  main{ max-width:900px; margin:0 auto; padding:28px 28px 60px; }
+
+  .goal-box{
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    border-radius:4px;
+    padding:14px 16px;
+    font-size:14px;
+    margin-bottom:28px;
+  }
+  .goal-box strong{ display:block; margin-bottom:4px; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:#31479c;}
+
+  .intro p{ color:var(--ink-soft); font-size:14px; margin: 0 0 12px; }
+
+  .scenario{
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:22px 24px 24px;
+    margin-bottom:22px;
+    background:#fff;
+  }
+  .scenario-number{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--accent);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:6px;
+  }
+  .scenario h2{ font-size:19px; margin:0 0 8px; }
+  .scenario-context{ font-size:14px; color:var(--ink-soft); margin:0 0 18px; }
+
+  .choice-group{ margin-bottom:18px; }
+  .choice-group-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+    display:block;
+  }
+
+  .option{
+    display:block;
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:12px 14px;
+    margin-bottom:8px;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .option:hover{ border-color:var(--accent); background:var(--accent-soft); }
+  .option input{ margin-right:10px; }
+  .option-tree{
+    display:block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    background:var(--code-bg);
+    color:var(--code-text);
+    padding:10px 12px;
+    border-radius:4px;
+    margin-top:8px;
+    white-space:pre;
+    overflow-x:auto;
+  }
+  .option-name{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    color:var(--ink);
+  }
+
+  .option.correct{ border-color:var(--success); background:var(--success-soft); }
+  .option.incorrect{ border-color:var(--danger); background:var(--danger-soft); }
+
+  .feedback{
+    display:none;
+    margin-top:6px;
+    padding:10px 14px;
+    border-left:3px solid var(--accent);
+    background:var(--bg);
+    border-radius:0 4px 4px 0;
+    font-size:13.5px;
+    color:var(--ink-soft);
+  }
+  .feedback.show{ display:block; }
+  .feedback b{ color:var(--ink); }
+
+  .btn-row{ display:flex; gap:12px; align-items:center; margin:24px 0; flex-wrap:wrap; }
+  button#checkBtn, button#resetBtn{
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    border:none;
+    padding:12px 22px;
+    border-radius:4px;
+    cursor:pointer;
+  }
+  button#checkBtn{ background:var(--ink); color:var(--bg); }
+  button#checkBtn:hover{ background:#333; }
+  button#checkBtn:disabled{ background:#B9BFCB; cursor:not-allowed; }
+  button#resetBtn{ background:transparent; color:var(--ink-soft); border:1px solid var(--border); }
+  button#resetBtn:hover{ border-color:var(--ink); color:var(--ink); }
+
+  .score-readout{
+    font-family:'JetBrains Mono',monospace;
+    font-size:14px;
+    padding:8px 14px;
+    border-radius:4px;
+    background:var(--border);
+  }
+  .score-readout.complete{ background:var(--success-soft); color:var(--success); border:1px solid var(--success); }
+
+  .banner{
+    margin-top:18px;
+    padding:14px 16px;
+    border-radius:5px;
+    font-size:14px;
+    display:none;
+  }
+  .banner.show{ display:block; }
+  .banner.win{ background:var(--success-soft); border:1px solid var(--success); color:#1e6b30; }
+  .banner.partial{ background:#FFF6E5; border:1px solid #E8A33D; color:#8a5b12; }
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    padding:20px;
+    font-family:'JetBrains Mono',monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">NOS 130 &middot; File &amp; Storage Management</div>
+    <h1 class="title"><span class="tag">&lt;lab&gt;</span> Choosing the Best File Hierarchy &amp; Naming Convention</h1>
+  </div>
+  <div class="course-badge">auto-graded</div>
+</header>
+
+<main>
+  <div class="goal-box">
+    <strong>Objective</strong>
+    For each real-world scenario below, choose the folder hierarchy and file naming convention that would hold up best over time — not just the one that looks fine on day one.
+  </div>
+
+  <div class="intro">
+    <p>A support tech's job isn't just fixing what's broken — it's setting things up so they don't break in the first place. Poor file organization is one of the most common "I can't find anything" tickets you'll ever get, and it's almost always caused by a hierarchy or naming pattern that worked fine for the first ten files and fell apart at the hundredth.</p>
+    <p>For each scenario, pick the <strong>hierarchy</strong> that best fits how someone would actually search for the file later, and the <strong>naming convention</strong> that stays sortable, unambiguous, and consistent as the collection grows. Click <strong>Check My Work</strong> to see feedback on every choice.</p>
+  </div>
+
+  <div id="scenarios"></div>
+
+  <div class="btn-row">
+    <button id="checkBtn">Check My Work</button>
+    <button id="resetBtn">Reset</button>
+    <span class="score-readout" id="scoreReadout">0 / 8 correct</span>
+  </div>
+
+  <div class="banner win" id="winBanner">
+    All 8 correct. You're reading these the way a support tech should — thinking about how the collection grows and how someone else would search it, not just how it looks with three files in it.
+  </div>
+  <div class="banner partial" id="partialBanner">
+    Some choices need a second look. Review the feedback above on any red option — the pattern to watch for is always "what happens when this collection has 500 files instead of 5."
+  </div>
+</main>
+
+<footer>NOS 130 — File Hierarchy Lab · Score is calculated locally in your browser</footer>
+
+<script src="scorm_api_wrapper.js"></script>
+<script>
+const SCENARIOS = [
+  {
+    title: "The Freelance Photographer",
+    context: "A freelance photographer shoots weddings and family portraits for dozens of different clients every year, including repeat clients who book her again in later years. She needs to find any client's photos in seconds, even years later.",
+    hierarchy: {
+      correct: 1,
+      options: [
+        { label: "One single \"Photos\" folder containing every photo from every shoot, ever.",
+          tree: "Photos/\n  IMG_0001.jpg\n  IMG_0002.jpg\n  IMG_0003.jpg\n  ...12,000 more files..." },
+        { label: "Organized by Year, then by Client/Event within that year.",
+          tree: "Photos/\n  2025/\n    Smith-Wedding/\n    Jones-Family/\n  2026/\n    Smith-Wedding/  (Smith rebooked!)\n    Nguyen-Family/" },
+        { label: "Organized by Client name only, with no year.",
+          tree: "Photos/\n  Smith-Wedding/\n  Jones-Family/\n  Nguyen-Family/" }
+      ],
+      feedback: [
+        "A flat folder with thousands of loose files is unsearchable at scale — there's no grouping at all, so finding one client's shoot means scrolling or relying entirely on remembering exact file names.",
+        "Correct. Year-then-client scales cleanly, and — critically — it handles a repeat client correctly: 2025's Smith wedding and 2026's Smith rebooking end up in two clearly separate folders instead of colliding into one.",
+        "This works fine until a client returns in a different year. Then you're forced to either merge two unrelated shoots into one folder or invent an inconsistent ad hoc fix for that one client only."
+      ]
+    },
+    naming: {
+      correct: 2,
+      options: [
+        { label: "IMG_0001.jpg, IMG_0002.jpg (camera default names, untouched)" },
+        { label: "final_edit_2.jpg, best_one.jpg, actually_final.jpg" },
+        { label: "2026-06-14_Smith-Wedding_001.jpg, 2026-06-14_Smith-Wedding_002.jpg" }
+      ],
+      feedback: [
+        "Camera-default names reset and repeat across different shoots and memory cards — two different weddings can both produce an IMG_0001.jpg — and the name carries zero information once it's outside its folder.",
+        "This is the classic \"final_final_v2\" trap: none of these names are sortable, and there's no way to tell which one is actually the true final version just by reading the name.",
+        "Correct. Leading with an ISO-format date (YYYY-MM-DD) makes files sort chronologically automatically, the descriptive event name survives even if the file is moved out of its folder, and the sequence number keeps order within the shoot."
+      ]
+    }
+  },
+  {
+    title: "The Small Business Shared Drive",
+    context: "A 15-person company shares one network drive across HR, Finance, and Marketing. Employees constantly can't find files, and people occasionally overwrite each other's work by accident.",
+    hierarchy: {
+      correct: 1,
+      options: [
+        { label: "One shared \"Documents\" folder where everyone saves everything together.",
+          tree: "Documents/\n  budget.xlsx\n  offer_letter.docx\n  campaign_deck.pptx\n  budget.xlsx  (someone else's, same name!)" },
+        { label: "Top-level folders by department, then by project or year within each.",
+          tree: "Company Documents/\n  HR/\n    Offer-Letters/\n    Policies/\n  Finance/\n    2026-Budget/\n  Marketing/\n    Q3-Campaign/" },
+        { label: "Top-level folders by file type, regardless of department.",
+          tree: "Documents/\n  Word-Docs/\n  Excel-Sheets/\n  PDFs/\n  Images/" }
+      ],
+      feedback: [
+        "With no boundaries between departments, name collisions and accidental overwrites are inevitable — and there's no clean way to restrict HR's confidential files from general staff access.",
+        "Correct. Organizing by department first mirrors how people actually search (\"I need last year's marketing budget\") and keeps ownership and permissions clean, since departments often need different access levels.",
+        "Sorting by file type ignores the question people actually ask, which is \"what project is this for,\" not \"what program made this file.\" Marketing's Q3 budget ends up scattered across three type-based folders instead of living together."
+      ]
+    },
+    naming: {
+      correct: 1,
+      options: [
+        { label: "Whatever each employee feels like typing that day — no shared convention." },
+        { label: "ProjectName_DocumentType_YYYY-MM-DD_v#.ext — e.g. Q3Campaign_Budget_2026-08-01_v2.xlsx" },
+        { label: "A random auto-generated ID per file — e.g. 8f3ac210.xlsx" }
+      ],
+      feedback: [
+        "With 15 different personal naming habits and zero shared convention, nobody can predict what to search for — this guarantees chaos as the drive grows.",
+        "Correct. This convention is consistent, sortable, human-readable, and version-aware — anyone can identify the project, type, date, and version without opening the file.",
+        "Machine-friendly but useless for humans — nobody browsing the shared drive can identify a file from its name alone, which defeats the entire purpose of a shared, browsable drive."
+      ]
+    }
+  },
+  {
+    title: "The Solo Developer",
+    context: "A developer building a web app keeps ending up with confusing duplicate versions of their code across their laptop, desktop, and a USB backup drive, and can never be sure which copy is current.",
+    hierarchy: {
+      correct: 1,
+      options: [
+        { label: "One big \"Code\" folder with every project's files mixed together loose.",
+          tree: "Code/\n  main.py\n  index.html\n  app.js\n  utils.py  (from which project??)" },
+        { label: "Version control (e.g. Git) as the single source of truth, with one clean folder per project.",
+          tree: "Projects/\n  WebApp/\n    src/\n    docs/\n    assets/\n  (Git tracks every change — no duplicate copies needed)" },
+        { label: "A brand new dated folder every time a change is made.",
+          tree: "Code_Aug1/\nCode_Aug2_fixed/\nCode_Aug3_reallyfixed/\nCode_Aug3_reallyfixed_v2/" }
+      ],
+      feedback: [
+        "With no project separation, files from different projects can even collide and overwrite each other if they happen to share a common filename like main.py.",
+        "Correct. Version control is the actual professional answer to \"which version is current\" — it tracks every change with real history, so you never need manual duplicate folders at all.",
+        "This is manual \"poor man's version control\" — it balloons in size fast, is easy to lose track of, and offers none of the real history, diffing, or rollback that a proper version control tool provides."
+      ]
+    },
+    naming: {
+      correct: 1,
+      options: [
+        { label: "main.py, main2.py, main_new.py, main_final.py, all sitting in the same folder" },
+        { label: "One main.py per project, with change history tracked through Git commits instead of duplicate filenames" },
+        { label: "A single script where every old version is just commented out at the bottom of the same file" }
+      ],
+      feedback: [
+        "This is the exact anti-pattern this whole lab is warning about — ambiguous ordering, and no way to know what actually changed between any two of these files.",
+        "Correct. This avoids the multiple-file problem entirely — the file name never changes, and every past version is fully recoverable through commit history instead of guesswork.",
+        "This avoids having multiple files, but creates a bloated, unreadable script — and commented-out dead code still isn't a substitute for real version history."
+      ]
+    }
+  },
+  {
+    title: "The Student's Coursework",
+    context: "A student takes several classes every semester, sometimes repeating a course, and needs to quickly find old notes and assignments — including when a professor references something \"like you covered in your intro class.\"",
+    hierarchy: {
+      correct: 1,
+      options: [
+        { label: "One folder called \"School\" with every file from every class and semester loose inside it.",
+          tree: "School/\n  notes.docx\n  homework.docx\n  lab1.docx\n  ...200 more loose files..." },
+        { label: "Semester, then Course, then assignment type within each course.",
+          tree: "School/\n  2026-Fall/\n    NOS130/\n      Labs/\n      Notes/\n    CTI110/\n      Labs/" },
+        { label: "Course name only, spanning every semester the course was taken.",
+          tree: "School/\n  NOS130/  (Fall 2025 and Fall 2026 files mixed together if retaken)" }
+      ],
+      feedback: [
+        "This is completely unsearchable once the collection grows past a handful of files — recognizing this pattern is the #1 skill for diagnosing a \"I can't find anything\" support ticket.",
+        "Correct. This mirrors the two natural ways a student actually searches — \"what semester was that\" and \"what class was that\" — while keeping assignment types separated for easy review.",
+        "This breaks down the moment a course is retaken or the student needs to tell this semester's notes apart from last year's — the same collision problem seen throughout this lab."
+      ]
+    },
+    naming: {
+      correct: 1,
+      options: [
+        { label: "Homework.docx, Homework1.docx, HomeworkREAL.docx" },
+        { label: "NOS130_Lab03_FileHierarchy_2026-09-10.docx" },
+        { label: "asdf.docx" }
+      ],
+      feedback: [
+        "Same ambiguous-versioning problem seen throughout this lab — by week five there will be a dozen \"Homework\" files with no way to tell them apart.",
+        "Correct. This immediately identifies the course, the specific assignment, the topic, and the date — sortable and unambiguous even years later.",
+        "This carries no information at all — the file is only identifiable by opening it, which defeats the purpose of a file name."
+      ]
+    }
+  }
+];
+
+function optionHTML(opt, groupName, idx) {
+  return `
+    <label class="option" data-idx="${idx}">
+      <input type="radio" name="${groupName}" value="${idx}">
+      <span class="option-name">${opt.label}</span>
+      ${opt.tree ? `<span class="option-tree">${opt.tree}</span>` : ""}
+    </label>`;
+}
+
+function render() {
+  const container = document.getElementById('scenarios');
+  container.innerHTML = SCENARIOS.map((s, si) => `
+    <div class="scenario" data-si="${si}">
+      <div class="scenario-number">Scenario ${si + 1} of ${SCENARIOS.length}</div>
+      <h2>${s.title}</h2>
+      <p class="scenario-context">${s.context}</p>
+
+      <div class="choice-group">
+        <span class="choice-group-label">Best Folder Hierarchy</span>
+        ${s.hierarchy.options.map((o, oi) => optionHTML(o, `h-${si}`, oi)).join("")}
+        <div class="feedback" id="fb-h-${si}"></div>
+      </div>
+
+      <div class="choice-group">
+        <span class="choice-group-label">Best Naming Convention</span>
+        ${s.naming.options.map((o, oi) => optionHTML(o, `n-${si}`, oi)).join("")}
+        <div class="feedback" id="fb-n-${si}"></div>
+      </div>
+    </div>
+  `).join("");
+
+  container.querySelectorAll('input[type="radio"]').forEach(el => {
+    el.addEventListener('change', updateCheckButtonState);
+  });
+}
+
+function updateCheckButtonState() {
+  const totalGroups = SCENARIOS.length * 2;
+  const answeredGroups = new Set();
+  document.querySelectorAll('input[type="radio"]:checked').forEach(el => answeredGroups.add(el.name));
+  document.getElementById('checkBtn').disabled = answeredGroups.size < totalGroups;
+}
+
+function runCheck() {
+  let correctCount = 0;
+  const totalCount = SCENARIOS.length * 2;
+
+  SCENARIOS.forEach((s, si) => {
+    ['hierarchy', 'naming'].forEach((kind, k) => {
+      const prefix = kind === 'hierarchy' ? 'h' : 'n';
+      const groupName = `${prefix}-${si}`;
+      const selected = document.querySelector(`input[name="${groupName}"]:checked`);
+      const selectedIdx = selected ? parseInt(selected.value) : -1;
+      const correctIdx = s[kind].correct;
+      const isCorrect = selectedIdx === correctIdx;
+      if (isCorrect) correctCount++;
+
+      document.querySelectorAll(`.option[data-idx][name="${groupName}"]`);
+      document.querySelectorAll(`label.option`).forEach(() => {}); // no-op safeguard
+
+      // mark options
+      const scenarioEl = document.querySelector(`.scenario[data-si="${si}"]`);
+      const groupOptions = scenarioEl.querySelectorAll(`input[name="${groupName}"]`);
+      groupOptions.forEach(input => {
+        const optLabel = input.closest('.option');
+        const idx = parseInt(input.value);
+        optLabel.classList.remove('correct', 'incorrect');
+        if (idx === correctIdx) optLabel.classList.add('correct');
+        else if (idx === selectedIdx) optLabel.classList.add('incorrect');
+        input.disabled = true;
+      });
+
+      const fbEl = document.getElementById(`fb-${prefix}-${si}`);
+      const verdict = isCorrect ? "Correct." : "Not quite.";
+      const ownFeedback = selectedIdx >= 0 ? s[kind].feedback[selectedIdx] : "";
+      const correctFeedback = s[kind].feedback[correctIdx].replace(/^Correct\.\s*/, "");
+      fbEl.innerHTML = isCorrect
+        ? `<b>${verdict}</b> ${correctFeedback}`
+        : `<b>${verdict}</b> ${ownFeedback} <br><br><b>The stronger choice:</b> ${correctFeedback}`;
+      fbEl.classList.add('show');
+    });
+  });
+
+  const scoreReadout = document.getElementById('scoreReadout');
+  scoreReadout.textContent = `${correctCount} / ${totalCount} correct`;
+  scoreReadout.classList.toggle('complete', correctCount === totalCount);
+
+  document.getElementById('winBanner').classList.toggle('show', correctCount === totalCount);
+  document.getElementById('partialBanner').classList.toggle('show', correctCount < totalCount);
+
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('checkBtn').textContent = 'Checked';
+
+  // Report to Moodle via SCORM (safely no-ops outside an LMS)
+  const pct = Math.round((correctCount / totalCount) * 100);
+  SCORM.setScoreAndStatus(correctCount, totalCount, 75); // 75% pass threshold — allows for one honest miss
+
+  return { correctCount, totalCount };
+}
+
+function resetLab() {
+  document.querySelectorAll('input[type="radio"]').forEach(el => { el.checked = false; el.disabled = false; });
+  document.querySelectorAll('.feedback').forEach(el => { el.classList.remove('show'); el.innerHTML = ''; });
+  document.querySelectorAll('.option').forEach(el => el.classList.remove('correct', 'incorrect'));
+  document.getElementById('scoreReadout').textContent = `0 / ${SCENARIOS.length * 2} correct`;
+  document.getElementById('scoreReadout').classList.remove('complete');
+  document.getElementById('winBanner').classList.remove('show');
+  document.getElementById('partialBanner').classList.remove('show');
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('checkBtn').textContent = 'Check My Work';
+}
+
+document.getElementById('checkBtn').addEventListener('click', runCheck);
+document.getElementById('resetBtn').addEventListener('click', resetLab);
+
+render();
+updateCheckButtonState();
+
+SCORM.init();
+window.addEventListener('beforeunload', function () { SCORM.finish(); });
+</script>
+
+</body>
+</html>
