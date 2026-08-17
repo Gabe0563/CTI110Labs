@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 2 Quiz — Windows File Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1B1F27;
+    --muted: #626B79;
+    --faint: #9AA3B0;
+    --bg: #F1F3F6;
+    --surface: #FFFFFF;
+    --hairline: #DCE1E8;
+    --hairline-strong: #C3CAD4;
+    --accent: #4F51C9;
+    --accent-soft: #E9E9FB;
+    --good: #0E8F6B;
+    --good-soft: #E4F5EE;
+    --bad: #C43F3F;
+    --bad-soft: #FBE9E9;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+    --font-body: "Inter", "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", "Consolas", monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  .hero {
+    background: linear-gradient(180deg, #171B22 0%, #1E2430 100%);
+    color: #F1F3F6;
+    padding: 56px 24px 44px;
+  }
+  .hero-inner { max-width: 760px; margin: 0 auto; }
+  .eyebrow { font-family: var(--font-mono); font-size: 13px; color: #A7A9F0; margin: 0 0 12px; }
+  .hero h1 { font-family: var(--font-display); font-weight: 600; font-size: clamp(28px, 4.5vw, 40px); line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .hero p { font-size: 16px; color: #B9C1CE; max-width: 60ch; margin: 0; }
+
+  main {
+    max-width: 760px;
+    margin: -20px auto 60px;
+    padding: 0 24px;
+  }
+
+  .progress-bar {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--muted);
+    box-shadow: 0 1px 2px rgba(20,24,31,0.04), 0 8px 24px rgba(20,24,31,0.05);
+  }
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: var(--hairline);
+    border-radius: 999px;
+    margin: 0 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 200ms ease;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(20,24,31,0.04), 0 8px 24px rgba(20,24,31,0.05);
+    padding: 22px 24px 20px;
+    margin-bottom: 16px;
+  }
+
+  .q-number {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 9px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 17px;
+    margin: 0 0 14px;
+    line-height: 1.35;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+    cursor: pointer;
+    font-size: 14.5px;
+    transition: border-color 120ms ease, background-color 120ms ease;
+  }
+  .option:hover { border-color: var(--accent); background: var(--bg); }
+  .option input { margin-top: 3px; flex: none; accent-color: var(--accent); }
+  .option.correct { border-color: var(--good); background: var(--good-soft); }
+  .option.incorrect { border-color: var(--bad); background: var(--bad-soft); }
+  .option.disabled { cursor: default; }
+  .option.disabled:hover { background: none; }
+  .option.correct:hover, .option.incorrect:hover { background: var(--good-soft); }
+  .option.incorrect:hover { background: var(--bad-soft); }
+
+  .explanation {
+    display: none;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--accent);
+    background: var(--bg);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .explanation.show { display: block; }
+  .explanation b { color: var(--ink); }
+
+  .quiz-footer {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(20,24,31,0.04), 0 8px 24px rgba(20,24,31,0.05);
+    padding: 22px 24px;
+    text-align: center;
+  }
+
+  button.primary {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  button.primary:hover { filter: brightness(1.08); }
+  button.primary:disabled { background: var(--hairline-strong); color: var(--faint); cursor: not-allowed; }
+
+  button.ghost {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 13px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--hairline-strong);
+    padding: 10px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  button.ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .score-headline {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 30px;
+    margin: 0 0 6px;
+  }
+  .score-sub { color: var(--muted); font-size: 14px; margin: 0 0 4px; }
+
+  #results-panel { display: none; }
+  #results-panel.show { display: block; }
+
+  @media (max-width: 600px) {
+    .hero { padding: 44px 18px 36px; }
+    main { padding: 0 14px; }
+    .question-card { padding: 18px 16px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">// NOS 130 — Chapter 2</p>
+    <h1>Chapter 2 Quiz: Windows File Management</h1>
+    <p>15 questions on file lifecycle, naming standards, paths, Explorer navigation, and the Recycle Bin — the everyday knowledge behind most support tickets. Pick an answer for each question to see immediate feedback.</p>
+  </div>
+</header>
+
+<main>
+  <div class="progress-bar">
+    <span id="progress-label">0 / 15 answered</span>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <span id="score-label">Score: 0</span>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="quiz-footer">
+    <button class="primary" id="submit-btn" disabled>Answer all questions to see your score</button>
+  </div>
+
+  <div id="results-panel">
+    <div class="quiz-footer" style="margin-top:16px;">
+      <p class="score-headline" id="final-score">—</p>
+      <p class="score-sub" id="final-message"></p>
+      <button class="ghost" id="retry-btn">Retake Quiz</button>
+    </div>
+  </div>
+</main>
+
+<script src="scorm_api_wrapper.js"></script>
+<script>
+/* ============================================================
+   QUIZ DATA — edit questions here.
+   ============================================================ */
+const QUESTIONS = [
+  {
+    text: "A user is typing a new document but hasn't clicked Save yet. Where does that data currently exist?",
+    options: [
+      "It's already written to the physical drive",
+      "It exists only in volatile memory (RAM) and will be lost if power fails",
+      "It's automatically stored in the Recycle Bin as a backup",
+      "It's saved to the cloud by default in every case"
+    ],
+    correct: 1,
+    explanation: "Until a document is saved, the application holds it in volatile memory (RAM). Saving is the step that writes it to persistent physical or virtual storage — this is why unsaved work disappears after a crash or power loss."
+  },
+  {
+    text: "What is the key difference between closing an application and closing a document that's already been saved?",
+    options: [
+      "They are functionally identical actions",
+      "Closing the application terminates the running process, but does not delete a document that was already saved to storage",
+      "Closing the document permanently deletes it from the drive",
+      "Closing an application always deletes unsaved data with no warning"
+    ],
+    correct: 1,
+    explanation: "Closing an application ends its process — the software instance — but a document that has already been written to storage remains there. The two actions affect different things: one is about the running program, the other is about the stored file."
+  },
+  {
+    text: "Which best describes the relationship between a window and a process in Windows?",
+    options: [
+      "A window is the visible interface; a single process can manage multiple windows at once",
+      "A window and a process are the same thing",
+      "A process is a fixed block of RAM permanently reserved for one document",
+      "Closing one window always terminates every related process"
+    ],
+    correct: 0,
+    explanation: "A window is the interface a user interacts with, while a process is the actual executing instance of the program. One process — like a browser — can have several windows open simultaneously."
+  },
+  {
+    text: "A user says bold and italic formatting disappeared from their document after opening it in a different text editor. What's the most likely explanation?",
+    options: [
+      "The file was saved as .txt (plain text), which doesn't support formatting the way .rtf does",
+      "A virus stripped the formatting from the file",
+      "The Recycle Bin silently removed the formatting",
+      ".exe files are incapable of holding formatted text"
+    ],
+    correct: 0,
+    explanation: "A .txt file is plain text with no formatting support at all, while .rtf (Rich Text Format) supports bold, italics, and similar styling. Recognizing which extension is in use explains why formatting can vanish when a file is saved or reopened incorrectly."
+  },
+  {
+    text: "What is the primary purpose of a file extension like .exe or .zip?",
+    options: [
+      "It tells Windows which application should open or handle that file",
+      "It sets the file's creation date automatically",
+      "It determines how much RAM the file is allowed to use",
+      "It controls whether the file can appear in the Recycle Bin"
+    ],
+    correct: 0,
+    explanation: "The extension is the primary indicator Windows uses for file association — deciding which program should open a given file and how the OS should treat it."
+  },
+  {
+    text: "Given the filenames \"Document1.txt\", \"Chapter2_FileManagement.txt\", and \"GabeRawlinson_Chapter2_FileManagement.txt\" — why is the third the strongest professional filename?",
+    options: [
+      "It's the shortest one to type",
+      "It includes both the owner and the specific content, giving immediate context for collaboration and support",
+      "It uses the fewest total characters allowed by Windows",
+      "It avoids using an underscore character"
+    ],
+    correct: 1,
+    explanation: "A professional filename should let someone identify the content and owner without opening the file. Including both the author's name and a specific description turns a vague file into something instantly useful for collaboration or a support ticket."
+  },
+  {
+    text: "In the path C:\\Users\\Student\\Documents\\Chapter2\\Assignment.txt, what does \"Chapter2\" represent?",
+    options: [
+      "The drive letter",
+      "The file extension",
+      "A subfolder nested inside the Documents folder",
+      "The filename itself"
+    ],
+    correct: 2,
+    explanation: "Reading the path left to right: C: is the drive, Users\\Student is the user profile directory, Documents\\Chapter2 is a hierarchy of nested subfolders, Assignment is the filename, and .txt is the extension."
+  },
+  {
+    text: "Why is Details view in File Explorer especially useful for an IT technician, compared to Small Icons view?",
+    options: [
+      "It loads noticeably faster on older hardware",
+      "It displays metadata like file size, type, and date modified — useful for spotting the most recent version or an abnormally large file",
+      "It automatically deletes duplicate files it detects",
+      "It hides file extensions for a cleaner appearance"
+    ],
+    correct: 1,
+    explanation: "Details view surfaces metadata — size, type, date modified — that's essential for real troubleshooting tasks, like identifying which file is the true latest version or finding what's eating up disk space."
+  },
+  {
+    text: "What actually happens when a file is Copied into a Backups folder, as opposed to Moved there?",
+    options: [
+      "Copying creates a second, independent instance of the file; the original stays exactly where it was",
+      "Copying deletes the original and places it in the new location",
+      "Copying and Moving are functionally identical operations in Windows",
+      "Copying automatically converts the file into a shortcut"
+    ],
+    correct: 0,
+    explanation: "Copying duplicates the file, leaving the original untouched in its source location. Moving, by contrast, relocates the file and removes it from where it originally was — the two operations have very different outcomes for data redundancy."
+  },
+  {
+    text: "A user deletes what they believe is just a desktop shortcut, but later finds their actual files are gone. What most likely happened?",
+    options: [
+      "The Recycle Bin automatically and permanently deleted the files on its own",
+      "They actually deleted the source file or folder itself, not a shortcut pointing to it",
+      "Deleting any shortcut always deletes the original file by design",
+      "The file extension was silently changed, hiding the files from view"
+    ],
+    correct: 1,
+    explanation: "A shortcut is only a pointer to a file or folder's location — deleting the shortcut itself does not touch the source. This scenario happens when a user deletes the actual source item while mistakenly believing it was just the shortcut."
+  },
+  {
+    text: "Is the Recycle Bin a backup system?",
+    options: [
+      "Yes, it protects all deleted files permanently and automatically",
+      "No — it's temporary storage for deleted items, and recovery becomes much harder once it's emptied",
+      "Yes, but only for .txt files specifically",
+      "No, because it deletes files immediately with no way to recover them at all"
+    ],
+    correct: 1,
+    explanation: "The Recycle Bin is a safety net, not a backup. It holds deleted items so they can be restored to their original location — but once emptied, recovery becomes significantly harder and isn't guaranteed."
+  },
+  {
+    text: "A file was deleted and the Recycle Bin has since been emptied. What's the most accurate thing to tell the user?",
+    options: [
+      "It can be instantly restored with a single click, no issue at all",
+      "It is permanently unrecoverable under any and all circumstances",
+      "Recovery is significantly more difficult at this point and typically requires advanced data recovery tools, with no guarantee of success",
+      "Windows automatically re-creates any deleted file after 30 days"
+    ],
+    correct: 2,
+    explanation: "Once the Recycle Bin is emptied, the file isn't necessarily gone forever, but normal recovery is no longer possible — getting it back typically requires specialized data recovery tools, and even then success isn't guaranteed."
+  },
+  {
+    text: "Why would a technician use the Address Bar to jump directly to a known folder path instead of clicking through each subfolder one at a time?",
+    options: [
+      "It's the only way to open File Explorer at all",
+      "It allows efficient direct navigation to a known path, which also builds a stronger mental map of the directory structure",
+      "It automatically creates a desktop shortcut to that folder",
+      "It bypasses all file and folder permissions"
+    ],
+    correct: 1,
+    explanation: "Typing a path directly into the Address Bar is faster once a technician knows the structure, and — just as importantly — reinforces the mental map of how the system is organized, which pays off when troubleshooting unfamiliar setups."
+  },
+  {
+    text: "What is the purpose of the Preview Pane in File Explorer?",
+    options: [
+      "It permanently deletes the currently selected file",
+      "It lets you view a supported file's contents without fully opening it in its associated application",
+      "It automatically renames the file using a standardized convention",
+      "It compresses the selected file into a .zip archive"
+    ],
+    correct: 1,
+    explanation: "The Preview Pane shows the contents of many common file types directly inside File Explorer, letting a technician quickly confirm what's in a file without launching a separate application."
+  },
+  {
+    text: "Why does this course require both a Knowledge Check and a hands-on Practical Assessment to validate Chapter 2 competency, rather than just one?",
+    options: [
+      "A Knowledge Check alone is always sufficient for real-world IT certification",
+      "The Knowledge Check confirms understanding of the underlying OS logic (like why the Recycle Bin isn't a backup), while the Practical Assessment confirms the student can actually execute the tasks",
+      "Practical Assessments exist purely for classroom scheduling purposes",
+      "Two assessments are required only to fill additional class time"
+    ],
+    correct: 1,
+    explanation: "Understanding the logic and being able to execute it are different skills. A technician might follow a checklist correctly but fail to adapt in a unique troubleshooting scenario without a real grasp of why each step matters — hence the dual-gate approach."
+  }
+];
+
+/* ============================================================
+   Rendering + scoring logic — no need to edit below this line.
+   ============================================================ */
+const container = document.getElementById("quiz-container");
+const submitBtn = document.getElementById("submit-btn");
+const progressLabel = document.getElementById("progress-label");
+const progressFill = document.getElementById("progress-fill");
+const scoreLabel = document.getElementById("score-label");
+const resultsPanel = document.getElementById("results-panel");
+const finalScore = document.getElementById("final-score");
+const finalMessage = document.getElementById("final-message");
+const retryBtn = document.getElementById("retry-btn");
+
+let answered = new Array(QUESTIONS.length).fill(null);
+let locked = false;
+
+function buildQuiz() {
+  container.innerHTML = QUESTIONS.map((q, qi) => `
+    <div class="question-card" data-qi="${qi}">
+      <span class="q-number">Question ${qi + 1} of ${QUESTIONS.length}</span>
+      <p class="q-text">${q.text}</p>
+      <div class="options">
+        ${q.options.map((opt, oi) => `
+          <label class="option" data-qi="${qi}" data-oi="${oi}">
+            <input type="radio" name="q${qi}" value="${oi}">
+            <span>${opt}</span>
+          </label>
+        `).join("")}
+      </div>
+      <div class="explanation" id="explain-${qi}"></div>
+    </div>
+  `).join("");
+
+  container.querySelectorAll('input[type="radio"]').forEach(input => {
+    input.addEventListener("change", onAnswer);
+  });
+}
+
+function onAnswer(e) {
+  if (locked) return;
+  const qi = parseInt(e.target.name.replace("q", ""));
+  const oi = parseInt(e.target.value);
+  answered[qi] = oi;
+  updateProgress();
+  checkAllAnswered();
+}
+
+function updateProgress() {
+  const count = answered.filter(a => a !== null).length;
+  progressLabel.textContent = `${count} / ${QUESTIONS.length} answered`;
+  progressFill.style.width = (count / QUESTIONS.length * 100) + "%";
+}
+
+function checkAllAnswered() {
+  const allAnswered = answered.every(a => a !== null);
+  submitBtn.disabled = !allAnswered;
+  submitBtn.textContent = allAnswered ? "Submit Quiz" : "Answer all questions to see your score";
+}
+
+function submitQuiz() {
+  locked = true;
+  let score = 0;
+
+  QUESTIONS.forEach((q, qi) => {
+    const chosen = answered[qi];
+    if (chosen === q.correct) score++;
+
+    const optionEls = container.querySelectorAll(`.option[data-qi="${qi}"]`);
+    optionEls.forEach(el => {
+      const oi = parseInt(el.dataset.oi);
+      el.classList.add("disabled");
+      el.querySelector("input").disabled = true;
+      if (oi === q.correct) el.classList.add("correct");
+      else if (oi === chosen) el.classList.add("incorrect");
+    });
+
+    const explainEl = document.getElementById(`explain-${qi}`);
+    const verdict = chosen === q.correct ? "Correct." : "Not quite.";
+    explainEl.innerHTML = `<b>${verdict}</b> ${q.explanation}`;
+    explainEl.classList.add("show");
+  });
+
+  scoreLabel.textContent = `Score: ${score} / ${QUESTIONS.length}`;
+  submitBtn.style.display = "none";
+
+  // Report to Moodle via SCORM (safely no-ops outside an LMS)
+  SCORM.setScoreAndStatus(score, QUESTIONS.length, 70);
+
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  finalScore.textContent = `${score} / ${QUESTIONS.length} (${pct}%)`;
+  finalMessage.textContent =
+    pct >= 90 ? "Excellent work — you've got Chapter 2 down cold." :
+    pct >= 70 ? "Solid grasp of the material, with a few gaps worth reviewing above." :
+    "Worth reviewing the explanations above and the Chapter 2 material before moving on.";
+  resultsPanel.classList.add("show");
+  resultsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetQuiz() {
+  answered = new Array(QUESTIONS.length).fill(null);
+  locked = false;
+  resultsPanel.classList.remove("show");
+  submitBtn.style.display = "";
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Answer all questions to see your score";
+  updateProgress();
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+submitBtn.addEventListener("click", submitQuiz);
+retryBtn.addEventListener("click", resetQuiz);
+
+buildQuiz();
+
+SCORM.init();
+window.addEventListener("beforeunload", function () { SCORM.finish(); });
+</script>
+
+</body>
+</html>
