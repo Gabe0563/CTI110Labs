@@ -169,15 +169,24 @@ const COURSES = [
         href: "Chapter1_Quiz.html",   // or the full URL if it's in a different repo
         instructorOnly: false
       },
-      {
-        title: "Lab 1 Answer Key & Rubric",
-        description: "Grading guide — instructor use",
-        type: "Key",
-        week: "1",
-        updated: "2026-08-06",
-        href: "#",   // ← do NOT host this on GitHub Pages — see the privacy note above. Point this at your LMS instead.
-        instructorOnly: true
+    {
+        title: "File Hierarchy & Naming Convention Lab",
+        description: "Choose the best structure across 4 real-world scenarios",
+        type: "Lab",
+        week: "5",
+        updated: "2026-08-17",
+        href: "NOS130_Lab_FileHierarchy_Naming.html",
+        instructorOnly: false
       }
+      {
+        title: "Chapter 2 Quiz",
+        description: "15 questions, instant feedback",
+        type: "Quiz",
+        week: "2",
+        updated: "2026-08-17",
+        href: "NOS130_Chapter2_Quiz.html",
+        instructorOnly: false
+        }
     ]
   }
 ];
