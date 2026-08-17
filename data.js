@@ -177,7 +177,7 @@ const COURSES = [
         updated: "2026-08-17",
         href: "NOS130_Lab_FileHierarchy_Naming.html",
         instructorOnly: false
-      }
+      },
       {
         title: "Chapter 2 Quiz",
         description: "15 questions, instant feedback",
