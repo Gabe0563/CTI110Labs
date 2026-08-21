@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTI 110 · Intro CSS Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1B1F27;
+    --ink-soft: #5B5F6B;
+    --accent: #E8A33D;
+    --accent-soft: #FCEACB;
+    --success: #2F9E44;
+    --success-soft: #E6F7EA;
+    --danger: #C4453C;
+    --code-bg: #10141C;
+    --code-text: #D8DEE9;
+    --border: #E0DCD1;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Space Grotesk',sans-serif; line-height:1.5; }
+  code, .mono{ font-family:'JetBrains Mono',monospace; }
+
+  header{ padding:28px 40px 22px; border-bottom:2px solid var(--ink); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; }
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase; }
+  h1.title{ margin:4px 0 0; font-size:28px; font-weight:700; }
+  h1.title .tag{ color:var(--accent); font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .course-badge{ font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--ink); color:var(--bg); padding:6px 12px; border-radius:3px; }
+
+  main{ display:grid; grid-template-columns: 360px 1fr; gap:0; min-height: calc(100vh - 96px); }
+  @media (max-width: 940px){ main{ grid-template-columns: 1fr; } }
+
+  .panel-instructions{ padding:28px 28px 40px; border-right:2px solid var(--ink); }
+  @media (max-width:940px){ .panel-instructions{ border-right:none; border-bottom:2px solid var(--ink); } }
+  .panel-instructions h2{ font-size:15px; text-transform:uppercase; letter-spacing:.06em; margin:24px 0 12px; }
+  .panel-instructions h2:first-of-type{ margin-top:0; }
+  .panel-instructions p{ color:var(--ink-soft); font-size:13.5px; }
+
+  .goal-box{ background:var(--accent-soft); border:1px solid var(--accent); border-radius:4px; padding:14px 16px; font-size:14px; margin-bottom:8px; }
+  .goal-box strong{ display:block; margin-bottom:4px; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:#8a5b12;}
+
+  .spec-table{ width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:6px; }
+  .spec-table th{ text-align:left; font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); padding:6px 4px; border-bottom:2px solid var(--ink); }
+  .spec-table td{ padding:7px 4px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .spec-table code{ font-size:11.5px; }
+  .swatch{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:4px; vertical-align:middle; border:1px solid rgba(0,0,0,.15); }
+
+  .inspector-list{ list-style:none; margin:0; padding:0; }
+  .inspector-list li{ display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .tag-chip{ font-family:'JetBrains Mono',monospace; font-size:10.5px; background:var(--ink); color:var(--bg); padding:3px 6px; border-radius:3px; white-space:nowrap; margin-top:1px; }
+  .status-dot{ width:10px; height:10px; border-radius:50%; background:#D8D4C6; flex-shrink:0; margin-top:4px; transition:background .2s ease; }
+  .inspector-list li.pass .status-dot{ background:var(--success); }
+  .inspector-list li.fail .status-dot{ background:var(--danger); }
+  .inspector-list li.pass .task-text{ color:var(--ink-soft); text-decoration:line-through; }
+
+  .panel-work{ padding:28px 32px 40px; }
+  .work-block{ margin-bottom:22px; }
+  .work-label{ font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; }
+  .file-badge{ font-family:'JetBrains Mono',monospace; font-size:10px; background:var(--border); color:var(--ink-soft); padding:2px 8px; border-radius:3px; }
+  textarea.editor{
+    width:100%; background:var(--code-bg); color:var(--code-text);
+    font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.6;
+    border:none; border-radius:6px; padding:16px; resize:vertical; tab-size:2; white-space:pre;
+  }
+  textarea#htmlEditor{ min-height:300px; }
+  textarea#cssEditor{ min-height:220px; }
+  textarea.editor:focus{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  iframe#preview{ width:100%; height:260px; border:1px solid var(--border); border-radius:6px; background:#fff; }
+
+  .btn-row{ display:flex; gap:12px; align-items:center; margin-top:18px; flex-wrap:wrap; }
+  button#checkBtn{ font-family:'JetBrains Mono',monospace; font-size:14px; background:var(--ink); color:var(--bg); border:none; padding:12px 22px; border-radius:4px; cursor:pointer; }
+  button#checkBtn:hover{ background:#333; }
+  button#resetBtn{ font-family:'JetBrains Mono',monospace; font-size:13px; background:transparent; color:var(--ink-soft); border:1px solid var(--border); padding:11px 16px; border-radius:4px; cursor:pointer; }
+  button#resetBtn:hover{ border-color: var(--ink); color:var(--ink); }
+  .score-readout{ font-family:'JetBrains Mono',monospace; font-size:14px; padding:8px 14px; border-radius:4px; background:var(--border); }
+  .score-readout.complete{ background:var(--success-soft); color:var(--success); border:1px solid var(--success); }
+
+  .banner{ margin-top:18px; padding:14px 16px; border-radius:5px; font-size:14px; display:none; }
+  .banner.show{ display:block; }
+  .banner.win{ background:var(--success-soft); border:1px solid var(--success); color:#1e6b30; }
+
+  .note{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; }
+
+  footer{ text-align:center; font-size:12px; color:var(--ink-soft); padding:20px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">CTI 110 &middot; Web Foundations</div>
+    <h1 class="title"><span class="tag">&lt;lab n="04"&gt;</span> Intro to CSS</h1>
+  </div>
+  <div class="course-badge">auto-graded</div>
+</header>
+
+<main>
+  <section class="panel-instructions">
+    <div class="goal-box">
+      <strong>Objective</strong>
+      Connect an external stylesheet, then follow the design spec below to style four parts of the page.
+    </div>
+    <p>Work from this spec the way you would a real client brief. Everything below is checkable, so if you follow it, your score will reflect that.</p>
+    <p><strong>Use pixels for every size in this assignment</strong> (not em, rem, or percentages), so your sizes are easy to verify.</p>
+
+    <h2>1. Link the Stylesheet</h2>
+    <p>This page isn't connected to its stylesheet yet. Add whatever's needed in the &lt;head&gt; of the HTML to link the two files together so the CSS actually applies.</p>
+
+    <h2>2. Intro Paragraph</h2>
+    <p>Give the welcome paragraph a different, more readable font than the browser default — Georgia, Verdana, Tahoma, Trebuchet MS, Courier New, and Times New Roman are all good choices. Set its size to either 16 or 18 pixels.</p>
+
+    <h2>3. Title Heading</h2>
+    <p>Style the shop's name at the top of the page: give it a distinct color (navy, steelblue, maroon, forestgreen, saddlebrown, and midnightblue are all good choices — a hex code works too), center it horizontally, and size it somewhere between 28 and 40 pixels so it reads as a clear heading.</p>
+
+    <h2>4. Menu List</h2>
+    <p>The menu items currently show as a plain bulleted list. Remove the bullets, and add at least a little breathing room (8 pixels or more) so the items aren't crammed together.</p>
+
+    <h2>5. Navigation Panel</h2>
+    <p>Give the navigation bar a background color (use the same color options as the heading, or any hex code), and add at least 8 pixels of padding around its contents so the links aren't touching the edges.</p>
+
+    <h2 style="margin-top:26px;">Task Checklist</h2>
+    <ul class="inspector-list" id="inspectorList">
+      <li data-check="link"><span class="status-dot"></span><span class="tag-chip">&lt;link&gt;</span><span class="task-text">Stylesheet linked in &lt;head&gt;</span></li>
+      <li data-check="font-family"><span class="status-dot"></span><span class="tag-chip">font-family</span><span class="task-text">.intro-text uses an approved font</span></li>
+      <li data-check="font-size-body"><span class="status-dot"></span><span class="tag-chip">font-size</span><span class="task-text">.intro-text is 16px or 18px</span></li>
+      <li data-check="heading-color"><span class="status-dot"></span><span class="tag-chip">color</span><span class="task-text">#page-title uses an approved color</span></li>
+      <li data-check="heading-align"><span class="status-dot"></span><span class="tag-chip">text-align</span><span class="task-text">#page-title is centered</span></li>
+      <li data-check="heading-size"><span class="status-dot"></span><span class="tag-chip">font-size</span><span class="task-text">#page-title is 28–40px</span></li>
+      <li data-check="list-bullets"><span class="status-dot"></span><span class="tag-chip">list-style-type</span><span class="task-text">.menu-list bullets removed</span></li>
+      <li data-check="list-spacing"><span class="status-dot"></span><span class="tag-chip">padding/margin</span><span class="task-text">.menu-list has spacing added</span></li>
+      <li data-check="nav-bg"><span class="status-dot"></span><span class="tag-chip">background-color</span><span class="task-text">.site-nav uses an approved color</span></li>
+      <li data-check="nav-padding"><span class="status-dot"></span><span class="tag-chip">padding</span><span class="task-text">.site-nav has padding added</span></li>
+    </ul>
+  </section>
+
+  <section class="panel-work">
+    <div class="work-block">
+      <label class="work-label" for="htmlEditor"><span>HTML</span><span class="file-badge">index.html</span></label>
+      <textarea class="editor" id="htmlEditor" spellcheck="false">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Downtown Coffee Collective&lt;/title&gt;
+  &lt;!-- TODO: add a &lt;link&gt; tag here connecting this page to styles.css --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;header&gt;
+    &lt;h1 id="page-title"&gt;Downtown Coffee Collective&lt;/h1&gt;
+  &lt;/header&gt;
+
+  &lt;nav class="site-nav"&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#menu"&gt;Menu&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#about"&gt;About&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+
+  &lt;main&gt;
+    &lt;p class="intro-text"&gt;Welcome to our neighborhood coffee shop, serving locally roasted beans since 2015.&lt;/p&gt;
+
+    &lt;h2&gt;Popular Menu Items&lt;/h2&gt;
+    &lt;ul class="menu-list"&gt;
+      &lt;li&gt;Vanilla Latte&lt;/li&gt;
+      &lt;li&gt;Cold Brew&lt;/li&gt;
+      &lt;li&gt;Avocado Toast&lt;/li&gt;
+      &lt;li&gt;Blueberry Muffin&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/main&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+</textarea>
+      <p class="note">Tip: the &lt;head&gt; is where a page connects to an outside stylesheet — think about what tag makes that connection.</p>
+    </div>
+
+    <div class="work-block">
+      <label class="work-label" for="cssEditor"><span>CSS</span><span class="file-badge">styles.css</span></label>
+      <textarea class="editor" id="cssEditor" spellcheck="false">/* Write your CSS here.
+   Use the instructions panel on the left as your guide for
+   the paragraph font, the heading, the menu list, and the nav bar. */
+
+</textarea>
+    </div>
+
+    <div class="work-block">
+      <label class="work-label">Live Preview</label>
+      <iframe id="preview" title="Live preview of your page"></iframe>
+      <p class="note">The preview combines both editors live so you can see your CSS working, even though they're shown as separate boxes above.</p>
+    </div>
+
+    <div class="btn-row">
+      <button id="checkBtn">Check My Work</button>
+      <button id="resetBtn">Reset to Starter</button>
+      <span class="score-readout" id="scoreReadout">0 / 10 tasks complete</span>
+    </div>
+
+    <div class="banner win" id="winBanner">
+      All 10 tasks complete. Your page follows the spec exactly — stylesheet linked, fonts, colors, sizes, and alignment all in place.
+    </div>
+  </section>
+</main>
+
+<footer>CTI 110 — Intro CSS Lab &middot; Score is calculated locally in your browser</footer>
+
+<script>
+  const STARTER_HTML = document.getElementById('htmlEditor').value;
+  const STARTER_CSS = document.getElementById('cssEditor').value;
+
+  const htmlEditor = document.getElementById('htmlEditor');
+  const cssEditor = document.getElementById('cssEditor');
+  const preview = document.getElementById('preview');
+  const checkBtn = document.getElementById('checkBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const scoreReadout = document.getElementById('scoreReadout');
+  const winBanner = document.getElementById('winBanner');
+  const items = document.querySelectorAll('#inspectorList li');
+
+  function renderPreview(){
+    const doc = preview.contentDocument || preview.contentWindow.document;
+    const combined = htmlEditor.value.replace(
+      '</head>',
+      `<style>${cssEditor.value}</style></head>`
+    );
+    doc.open();
+    doc.write(combined);
+    doc.close();
+  }
+
+  // Parses top-level CSS rules into { selector, body } pairs.
+  function parseCssRules(css){
+    const rules = [];
+    const ruleRegex = /([^{}]+)\{([^{}]*)\}/g;
+    let match;
+    while ((match = ruleRegex.exec(css)) !== null) {
+      rules.push({ selector: match[1].trim().toLowerCase(), body: match[2] });
+    }
+    return rules;
+  }
+
+  function findRuleBody(rules, selectorSubstring){
+    const target = selectorSubstring.toLowerCase();
+    const rule = rules.find(r => r.selector.includes(target));
+    return rule ? rule.body : null;
+  }
+
+  function extractValue(body, property){
+    if (!body) return null;
+    const re = new RegExp(property + '\\s*:\\s*([^;]+);', 'i');
+    const match = body.match(re);
+    return match ? match[1].trim() : null;
+  }
+
+  const APPROVED_FONTS = ['georgia', 'verdana', 'tahoma', 'trebuchet', 'courier', 'times new roman', 'times'];
+  const APPROVED_COLORS = ['navy', 'steelblue', 'maroon', 'forestgreen', 'saddlebrown', 'midnightblue'];
+
+  function isApprovedFont(value){
+    if (!value) return false;
+    const v = value.toLowerCase();
+    return APPROVED_FONTS.some(f => v.includes(f));
+  }
+
+  function isApprovedColor(value){
+    if (!value) return false;
+    const v = value.trim().toLowerCase();
+    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/.test(v)) return true;
+    if (/^rgba?\(/.test(v)) return true;
+    return APPROVED_COLORS.includes(v);
+  }
+
+  function pxValueInRange(value, min, max){
+    if (!value) return false;
+    const match = value.match(/([\d.]+)\s*px/i);
+    if (!match) return false;
+    const num = parseFloat(match[1]);
+    return num >= min && num <= max;
+  }
+
+  function pxValueAtLeast(value, min){
+    if (!value) return false;
+    const match = value.match(/([\d.]+)\s*px/i);
+    if (!match) return false;
+    return parseFloat(match[1]) >= min;
+  }
+
+  function gradeWork(){
+    const rawHtml = htmlEditor.value;
+    const rawCss = cssEditor.value;
+    const results = {};
+
+    // 1. Stylesheet link
+    const linkTags = rawHtml.match(/<link\b[^>]*>/gi) || [];
+    results['link'] = linkTags.some(tag =>
+      /rel\s*=\s*["']stylesheet["']/i.test(tag) && /href\s*=\s*["'][^"']+\.css["']/i.test(tag)
+    );
+
+    const rules = parseCssRules(rawCss);
+
+    // .intro-text
+    const introBody = findRuleBody(rules, 'intro-text');
+    results['font-family'] = isApprovedFont(extractValue(introBody, 'font-family'));
+    results['font-size-body'] = pxValueInRange(extractValue(introBody, 'font-size'), 14, 24);
+
+    // #page-title
+    const titleBody = findRuleBody(rules, 'page-title');
+    results['heading-color'] = isApprovedColor(extractValue(titleBody, 'color'));
+    results['heading-align'] = (extractValue(titleBody, 'text-align') || '').toLowerCase() === 'center';
+    results['heading-size'] = pxValueInRange(extractValue(titleBody, 'font-size'), 24, 48);
+
+    // .menu-list
+    const listBody = findRuleBody(rules, 'menu-list');
+    results['list-bullets'] = (extractValue(listBody, 'list-style-type') || extractValue(listBody, 'list-style') || '').toLowerCase().includes('none');
+    results['list-spacing'] = pxValueAtLeast(extractValue(listBody, 'padding'), 4) || pxValueAtLeast(extractValue(listBody, 'margin'), 4);
+
+    // .site-nav
+    const navBody = findRuleBody(rules, 'site-nav');
+    results['nav-bg'] = isApprovedColor(extractValue(navBody, 'background-color') || extractValue(navBody, 'background'));
+    results['nav-padding'] = pxValueAtLeast(extractValue(navBody, 'padding'), 4);
+
+    return results;
+  }
+
+  function updateUI(results){
+    let passed = 0;
+    items.forEach(li => {
+      const key = li.dataset.check;
+      const ok = results[key];
+      li.classList.toggle('pass', !!ok);
+      li.classList.toggle('fail', !ok);
+      if (ok) passed++;
+    });
+
+    const total = items.length;
+    scoreReadout.textContent = `${passed} / ${total} tasks complete`;
+    scoreReadout.classList.toggle('complete', passed === total);
+    winBanner.classList.toggle('show', passed === total);
+
+    // Hook point: a real deployment (SCORM or LTI) would report the score here.
+
+    return { passed, total };
+  }
+
+  function runCheck(){
+    renderPreview();
+    const results = gradeWork();
+    updateUI(results);
+  }
+
+  checkBtn.addEventListener('click', runCheck);
+  htmlEditor.addEventListener('input', renderPreview);
+  cssEditor.addEventListener('input', renderPreview);
+  resetBtn.addEventListener('click', () => {
+    htmlEditor.value = STARTER_HTML;
+    cssEditor.value = STARTER_CSS;
+    renderPreview();
+    items.forEach(li => li.classList.remove('pass', 'fail'));
+    scoreReadout.textContent = '0 / 10 tasks complete';
+    scoreReadout.classList.remove('complete');
+    winBanner.classList.remove('show');
+  });
+
+  renderPreview();
+</script>
+
+</body>
+</html>
