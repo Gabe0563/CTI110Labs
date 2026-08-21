@@ -79,6 +79,15 @@ const COURSES = [
         href: "profile-page-lab.html",  // lives right here in this repo
         instructorOnly: false
       },
+         {
+        title: "Intro CSS Assignment",
+        description: "Students will add CSS to an existing HTML Doc ",
+        type: "Lab",
+        week: "4",
+        updated: "2026-07-28",              // ← set to the real date if you want it exact
+        href: "intro-css-lab.html",  // lives right here in this repo
+        instructorOnly: false
+      },
 
       {
         title: "Chapter 1 Troubleshooting",
@@ -186,7 +195,7 @@ const COURSES = [
         updated: "2026-08-17",
         href: "NOS130_Chapter2_Quiz.html",
         instructorOnly: false
-        }
+        },
     ]
   }
 ];
