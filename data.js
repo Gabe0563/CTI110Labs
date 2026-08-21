@@ -88,6 +88,15 @@ const COURSES = [
         href: "intro-css-lab.html",  // lives right here in this repo
         instructorOnly: false
       },
+       {
+        title: "HTML, CSS, & JS Exam",
+        description: "Quiz Checking understanding on HTML, CSS, & JS troubleshooting",
+        type: "Quiz",
+        week: "1",
+        updated: "2026-07-28",
+        href: "troubleshooting-exam.html",
+        instructorOnly: false
+      },
 
       {
         title: "Chapter 1 Troubleshooting",
