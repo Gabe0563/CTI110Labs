@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTI 110 · Python Fundamentals Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1B1F27;
+    --ink-soft: #5B5F6B;
+    --accent: #2C6FA8;
+    --accent-soft: #E4EEF7;
+    --success: #2F9E44;
+    --success-soft: #E6F7EA;
+    --danger: #C4453C;
+    --danger-soft: #FBE9E7;
+    --border: #E0DCD1;
+    --card: #FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Space Grotesk',sans-serif; line-height:1.5; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+
+  header{ padding:28px 40px 22px; border-bottom:2px solid var(--ink); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; }
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase; }
+  h1.title{ margin:4px 0 0; font-size:26px; font-weight:700; }
+  h1.title .tag{ color:var(--accent); font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .course-badge{ font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--ink); color:var(--bg); padding:6px 12px; border-radius:3px; }
+
+  main{ max-width:760px; margin:0 auto; padding:32px 24px 60px; }
+
+  .section-label{ font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); margin:36px 0 14px; }
+  .section-label:first-child{ margin-top:0; }
+
+  .card{ background:var(--card); border:1px solid var(--border); border-radius:8px; padding:20px 22px; margin-bottom:16px; transition: border-color .2s ease, background .2s ease; }
+  .card.correct{ border-color:var(--success); background:var(--success-soft); }
+  .card.incorrect{ border-color:var(--danger); background:var(--danger-soft); }
+
+  .q-index{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); margin-bottom:6px; display:block; }
+  .q-text{ font-size:16px; font-weight:600; margin:0 0 14px; }
+
+  .options{ display:flex; flex-direction:column; gap:8px; }
+  .option{ display:flex; align-items:center; gap:10px; padding:10px 14px; border:1px solid var(--border); border-radius:6px; cursor:pointer; font-size:14px; background:var(--bg); }
+  .option:hover{ border-color:var(--accent); }
+  .option input{ accent-color: var(--accent); }
+  .option.selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .card.correct .option.selected{ border-color:var(--success); background:var(--success-soft); }
+  .card.incorrect .option.selected{ border-color:var(--danger); background:var(--danger-soft); }
+  .card.incorrect .option.answer-key{ border-color:var(--success); background:var(--success-soft); }
+
+  .explain{ display:none; font-size:13px; color:var(--ink-soft); margin-top:12px; padding-top:12px; border-top:1px dashed var(--border); }
+  .card.checked .explain{ display:block; }
+
+  .match-row{ display:grid; grid-template-columns: 1fr 28px 1fr; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .match-row:last-child{ border-bottom:none; }
+  .match-term{ font-size:14px; font-weight:600; }
+  .match-arrow{ text-align:center; color:var(--ink-soft); font-family:'JetBrains Mono',monospace; }
+  select.match-select{ width:100%; font-family:'Space Grotesk',sans-serif; font-size:13.5px; padding:8px 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--ink); }
+  select.match-select:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .match-row.correct select{ border-color:var(--success); background:var(--success-soft); }
+  .match-row.incorrect select{ border-color:var(--danger); background:var(--danger-soft); }
+
+  .sticky-bar{ position:sticky; bottom:0; background:var(--bg); border-top:2px solid var(--ink); padding:16px 24px; display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:20px; }
+  button#checkBtn{ font-family:'JetBrains Mono',monospace; font-size:14px; background:var(--ink); color:var(--bg); border:none; padding:12px 24px; border-radius:4px; cursor:pointer; }
+  button#checkBtn:hover{ background:#333; }
+  button#resetBtn{ font-family:'JetBrains Mono',monospace; font-size:13px; background:transparent; color:var(--ink-soft); border:1px solid var(--border); padding:11px 16px; border-radius:4px; cursor:pointer; }
+  button#resetBtn:hover{ border-color:var(--ink); color:var(--ink); }
+  .score-readout{ font-family:'JetBrains Mono',monospace; font-size:14px; padding:8px 14px; border-radius:4px; background:var(--border); }
+  .score-readout.complete{ background:var(--success-soft); color:var(--success); border:1px solid var(--success); }
+
+  footer{ text-align:center; font-size:12px; color:var(--ink-soft); padding:20px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">CTI 110 &middot; Intro to Python</div>
+    <h1 class="title"><span class="tag">&lt;quiz n="01"&gt;</span> Python Fundamentals</h1>
+  </div>
+  <div class="course-badge">auto-graded</div>
+</header>
+
+<main>
+  <p class="mono" style="font-size:13px;color:var(--ink-soft);">Based on the "Foundation in Python" reading. Answer every question, then click <strong>Check My Work</strong> at the bottom.</p>
+
+  <div class="section-label">Part A &middot; Multiple Choice</div>
+  <div id="mcContainer"></div>
+
+  <div class="section-label">Part B &middot; Matching</div>
+  <div id="matchContainer"></div>
+</main>
+
+<div class="sticky-bar">
+  <button id="checkBtn">Check My Work</button>
+  <button id="resetBtn">Reset Quiz</button>
+  <span class="score-readout" id="scoreReadout">0 / 12 correct</span>
+</div>
+
+<footer>CTI 110 — Python Fundamentals Quiz &middot; Score is calculated locally in your browser</footer>
+
+<script>
+const mcQuestions = [
+  {
+    id: 'mc1',
+    text: 'What does it mean that Python is an "interpreted" language, according to the reading?',
+    options: [
+      'Code must be compiled into machine code before it can run.',
+      'Code is executed directly by the Python interpreter, without a separate compilation step, letting students run and iterate immediately.',
+      'Python code only runs on specialized interpreter hardware.',
+      'Interpreted languages cannot be used for real IT automation.'
+    ],
+    correctIndex: 1,
+    explain: 'Being interpreted means the interpreter runs the code directly — write, run, observe, iterate — with no separate compile step, which lowers the barrier to entry for new programmers.'
+  },
+  {
+    id: 'mc2',
+    text: 'What is the industry-standard convention for indentation in Python?',
+    options: [
+      'Two spaces per level',
+      'One tab per level',
+      'Four spaces per level, without mixing tabs and spaces',
+      'Indentation is optional and purely stylistic'
+    ],
+    correctIndex: 2,
+    explain: 'The reading specifies four spaces per indentation level as the standard, and warns that mixing tabs and spaces can confuse the interpreter and cause errors.'
+  },
+  {
+    id: 'mc3',
+    text: 'A line of code sits at the same indentation level as an "if" statement above it (not indented further). What happens to that line?',
+    options: [
+      'It only runs if the if condition was true.',
+      'It never runs at all.',
+      'It runs unconditionally, regardless of whether the if condition was met.',
+      'It causes a syntax error automatically.'
+    ],
+    correctIndex: 2,
+    explain: 'The reading is explicit: code written without indentation executes unconditionally — it runs no matter what the preceding if condition evaluated to.'
+  },
+  {
+    id: 'mc4',
+    text: 'Per the reading\'s commenting philosophy, which of these is the MORE useful comment?',
+    options: [
+      '# Adds 5 to the total',
+      '# Adjusting for standard overhead buffer',
+      'Neither — comments should never be used in professional code.',
+      'Both are equally useful since they both describe the line of code.'
+    ],
+    correctIndex: 1,
+    explain: 'Good comments explain the "why," not the "what." "Adds 5 to the total" just repeats what the code already shows; "adjusting for standard overhead buffer" explains the reasoning a future reader would actually need.'
+  },
+  {
+    id: 'mc5',
+    text: 'Which category of operator produces a Boolean (True/False) result, which is what triggers decision-making in a program?',
+    options: [
+      'Arithmetic operators (+, -, *, /)',
+      'Comparison operators (==, !=, >, <)',
+      'String operators',
+      'Assignment operators'
+    ],
+    correctIndex: 1,
+    explain: 'Comparison operators evaluate the relationship between values and generate a True/False result — the trigger a program needs to make decisions.'
+  },
+  {
+    id: 'mc6',
+    text: 'What is the strategic value of functions, according to the reading?',
+    options: [
+      'They make code run faster than loops.',
+      'They are reusable blocks of code that let a task be defined once and called whenever needed, improving reliability and reducing repeated logic.',
+      'They are required for a Python script to execute at all.',
+      'They replace the need for variables.'
+    ],
+    correctIndex: 1,
+    explain: 'Functions let you define a task once and reuse it, which reduces repeated logic, lowers the risk of errors, and makes scripts easier to read and maintain.'
+  }
+];
+
+const matchQuestions = [
+  {
+    id: 'match1',
+    prompt: 'Match each data type to the kind of information it stores, per the reading\'s examples.',
+    pairs: [
+      { left: 'str (String)', right: 'Text data, such as a device name or an IP address.' },
+      { left: 'int (Integer)', right: 'Whole numbers, such as a count of active users.' },
+      { left: 'float (Float)', right: 'Decimal numbers, such as a CPU utilization percentage.' }
+    ]
+  },
+  {
+    id: 'match2',
+    prompt: 'Match each repetition/collection concept to its description.',
+    pairs: [
+      { left: 'List', right: 'A collection used to store multiple items, such as a list of IP addresses.' },
+      { left: 'For Loop', right: 'Iterates through a collection, performing an action on every item.' },
+      { left: 'While Loop', right: 'Continues running as long as a specific condition remains true.' }
+    ]
+  }
+];
+
+function shuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const mcContainer = document.getElementById('mcContainer');
+mcQuestions.forEach((q, qi) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.qid = q.id;
+  card.innerHTML = `
+    <span class="q-index">Question ${qi + 1}</span>
+    <p class="q-text">${q.text}</p>
+    <div class="options">
+      ${q.options.map((opt, oi) => `
+        <label class="option" data-opt-index="${oi}">
+          <input type="radio" name="${q.id}" value="${oi}">
+          <span>${opt}</span>
+        </label>
+      `).join('')}
+    </div>
+    <div class="explain">${q.explain}</div>
+  `;
+  mcContainer.appendChild(card);
+  card.querySelectorAll('.option').forEach(optEl => {
+    optEl.addEventListener('click', () => {
+      card.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      optEl.classList.add('selected');
+      optEl.querySelector('input').checked = true;
+    });
+  });
+});
+
+const matchContainer = document.getElementById('matchContainer');
+matchQuestions.forEach((q) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.qid = q.id;
+  const shuffledRights = shuffle(q.pairs.map((p, i) => ({ text: p.right, correctIndex: i })));
+  const rowsHtml = q.pairs.map((p, leftIndex) => `
+    <div class="match-row" data-left-index="${leftIndex}">
+      <div class="match-term">${p.left}</div>
+      <div class="match-arrow">&rarr;</div>
+      <select class="match-select">
+        <option value="" disabled selected>Choose a match...</option>
+        ${shuffledRights.map(r => `<option value="${r.correctIndex}">${r.text}</option>`).join('')}
+      </select>
+    </div>
+  `).join('');
+  card.innerHTML = `<p class="q-text">${q.prompt}</p>${rowsHtml}`;
+  matchContainer.appendChild(card);
+});
+
+const checkBtn = document.getElementById('checkBtn');
+const resetBtn = document.getElementById('resetBtn');
+const scoreReadout = document.getElementById('scoreReadout');
+const totalItems = mcQuestions.length + matchQuestions.reduce((sum, q) => sum + q.pairs.length, 0);
+
+function gradeQuiz(){
+  let correct = 0;
+
+  mcQuestions.forEach(q => {
+    const card = document.querySelector(`.card[data-qid="${q.id}"]`);
+    const selected = card.querySelector('input[type="radio"]:checked');
+    card.classList.add('checked');
+    card.classList.remove('correct', 'incorrect');
+    card.querySelectorAll('.option').forEach(o => o.classList.remove('answer-key'));
+
+    if (selected && parseInt(selected.value, 10) === q.correctIndex){
+      card.classList.add('correct');
+      correct++;
+    } else {
+      card.classList.add('incorrect');
+      const correctOpt = card.querySelector(`.option[data-opt-index="${q.correctIndex}"]`);
+      if (correctOpt) correctOpt.classList.add('answer-key');
+    }
+  });
+
+  matchQuestions.forEach(q => {
+    const card = document.querySelector(`.card[data-qid="${q.id}"]`);
+    const rows = card.querySelectorAll('.match-row');
+    let allCorrect = true;
+    rows.forEach(row => {
+      const leftIndex = parseInt(row.dataset.leftIndex, 10);
+      const select = row.querySelector('select');
+      const chosen = select.value;
+      row.classList.remove('correct', 'incorrect');
+      if (chosen !== '' && parseInt(chosen, 10) === leftIndex){
+        row.classList.add('correct');
+        correct++;
+      } else {
+        row.classList.add('incorrect');
+        allCorrect = false;
+      }
+    });
+    card.classList.toggle('correct', allCorrect);
+    card.classList.toggle('incorrect', !allCorrect);
+  });
+
+  scoreReadout.textContent = `${correct} / ${totalItems} correct`;
+  scoreReadout.classList.toggle('complete', correct === totalItems);
+
+  // Hook point: a real deployment (SCORM or LTI) would report the score here.
+
+  return { correct, total: totalItems };
+}
+
+function resetQuiz(){
+  document.querySelectorAll('.card').forEach(card => card.classList.remove('correct', 'incorrect', 'checked'));
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected', 'answer-key'));
+  document.querySelectorAll('.match-select').forEach(s => s.value = '');
+  document.querySelectorAll('.match-row').forEach(r => r.classList.remove('correct', 'incorrect'));
+  scoreReadout.textContent = `0 / ${totalItems} correct`;
+  scoreReadout.classList.remove('complete');
+}
+
+checkBtn.addEventListener('click', gradeQuiz);
+resetBtn.addEventListener('click', resetQuiz);
+</script>
+
+</body>
+</html>

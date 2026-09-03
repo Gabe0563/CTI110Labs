@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTI 110 · Python Troubleshooting Exam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1B1F27;
+    --ink-soft: #5B5F6B;
+    --accent: #B23A48;
+    --accent-soft: #F7E5E7;
+    --success: #2F9E44;
+    --success-soft: #E6F7EA;
+    --danger: #C4453C;
+    --danger-soft: #FBE9E7;
+    --border: #E0DCD1;
+    --card: #FFFFFF;
+    --code-bg: #10141C;
+    --code-text: #D8DEE9;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Space Grotesk',sans-serif; line-height:1.5; }
+  .mono{ font-family:'JetBrains Mono',monospace; }
+
+  header{ padding:28px 40px 22px; border-bottom:2px solid var(--ink); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; }
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase; }
+  h1.title{ margin:4px 0 0; font-size:26px; font-weight:700; }
+  h1.title .tag{ color:var(--accent); font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .course-badge{ font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--ink); color:var(--bg); padding:6px 12px; border-radius:3px; }
+
+  main{ max-width:820px; margin:0 auto; padding:32px 24px 60px; }
+
+  .intro-note{ font-size:13.5px; color:var(--ink-soft); background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:14px 16px; margin-bottom:24px; }
+  .intro-note strong{ color:var(--ink); }
+
+  .card{ background:var(--card); border:1px solid var(--border); border-radius:8px; padding:22px; margin-bottom:18px; transition: border-color .2s ease, background .2s ease; }
+  .card.correct{ border-color:var(--success); background:var(--success-soft); }
+  .card.incorrect{ border-color:var(--danger); background:var(--danger-soft); }
+
+  .q-meta{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .q-index{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); }
+  .topic-chip{ font-family:'JetBrains Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; padding:3px 9px; border-radius:3px; background:var(--ink); color:var(--bg); }
+
+  .q-text{ font-size:15px; font-weight:600; margin:0 0 12px; }
+
+  .broken-code{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.6;
+    background:var(--code-bg); color:var(--code-text);
+    padding:14px 16px; border-radius:6px; margin:0 0 14px;
+    overflow-x:auto; white-space:pre;
+  }
+  .broken-code::before{
+    content:"BROKEN CODE"; display:block; font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.08em; color:#E8848C; margin-bottom:8px;
+  }
+
+  .options{ display:flex; flex-direction:column; gap:8px; }
+  .option{ display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid var(--border); border-radius:6px; cursor:pointer; background:var(--bg); }
+  .option:hover{ border-color:var(--accent); }
+  .option input{ accent-color: var(--accent); margin-top:4px; }
+  .option pre{ margin:0; font-family:'JetBrains Mono',monospace; font-size:12.5px; white-space:pre-wrap; word-break:break-word; }
+  .option.selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .card.correct .option.selected{ border-color:var(--success); background:var(--success-soft); }
+  .card.incorrect .option.selected{ border-color:var(--danger); background:var(--danger-soft); }
+  .card.incorrect .option.answer-key{ border-color:var(--success); background:var(--success-soft); }
+
+  .explain{ display:none; font-size:13px; color:var(--ink-soft); margin-top:14px; padding-top:12px; border-top:1px dashed var(--border); }
+  .card.checked .explain{ display:block; }
+
+  .sticky-bar{ position:sticky; bottom:0; background:var(--bg); border-top:2px solid var(--ink); padding:16px 24px; display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:20px; }
+  button#checkBtn{ font-family:'JetBrains Mono',monospace; font-size:14px; background:var(--ink); color:var(--bg); border:none; padding:12px 24px; border-radius:4px; cursor:pointer; }
+  button#checkBtn:hover{ background:#333; }
+  button#resetBtn{ font-family:'JetBrains Mono',monospace; font-size:13px; background:transparent; color:var(--ink-soft); border:1px solid var(--border); padding:11px 16px; border-radius:4px; cursor:pointer; }
+  button#resetBtn:hover{ border-color:var(--ink); color:var(--ink); }
+  .score-readout{ font-family:'JetBrains Mono',monospace; font-size:14px; padding:8px 14px; border-radius:4px; background:var(--border); }
+  .score-readout.complete{ background:var(--success-soft); color:var(--success); border:1px solid var(--success); }
+
+  footer{ text-align:center; font-size:12px; color:var(--ink-soft); padding:20px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">CTI 110 &middot; Intro to Python</div>
+    <h1 class="title"><span class="tag">&lt;exam&gt;</span> Python Troubleshooting Exam</h1>
+  </div>
+  <div class="course-badge">auto-graded</div>
+</header>
+
+<main>
+  <p class="intro-note">
+    <strong>How this works:</strong> each question shows real broken Python code with an IT/sysadmin scenario behind it.
+    Read it like you're debugging someone else's script, then choose the option that actually fixes it — not just
+    one that looks similar. Some options are broken in a different way, and at least one usually repeats the
+    original bug.
+  </p>
+
+  <div id="examContainer"></div>
+</main>
+
+<div class="sticky-bar">
+  <button id="checkBtn">Check My Work</button>
+  <button id="resetBtn">Reset Exam</button>
+  <span class="score-readout" id="scoreReadout">0 / 10 correct</span>
+</div>
+
+<footer>CTI 110 — Python Troubleshooting Exam &middot; Score is calculated locally in your browser</footer>
+
+<script>
+const QUESTIONS = [
+  {
+    id: 'q1',
+    topic: 'Syntax',
+    text: 'This script checking server status throws a SyntaxError. Which fixes it?',
+    broken: `status = "online"\nif status == "online"\n    print("Server is reachable.")`,
+    options: [
+      `status = "online"\nif status == "online":\n    print("Server is reachable.")`,
+      `status = "online"\nif status == "online";\n    print("Server is reachable.")`,
+      `status = "online"\nif status == "online":\nprint("Server is reachable.")`,
+      `status = "online"\nif (status == "online")\n    print("Server is reachable.")`
+    ],
+    correctIndex: 0,
+    explain: 'An if statement needs a colon at the end of the line. Option B uses a semicolon instead (still a SyntaxError). Option C adds the colon but forgets to indent the line underneath, causing a different error (IndentationError). Option D adds parentheses but still never adds the colon.'
+  },
+  {
+    id: 'q2',
+    topic: 'Indentation',
+    text: 'This function mixes a tab and spaces for indentation and crashes with an IndentationError. Which fixes it AND follows the four-space indentation standard from this course?',
+    broken: `def check_status():\n\tstatus = "online"\n    if status == "online":\n        print("OK")`,
+    options: [
+      `def check_status():\n    status = "online"\n    if status == "online":\n        print("OK")`,
+      `def check_status():\n\tstatus = "online"\n\tif status == "online":\n\t\tprint("OK")`,
+      `def check_status():\n    status = "online"\n\tif status == "online":\n        print("OK")`,
+      `def check_status():\nstatus = "online"\nif status == "online":\nprint("OK")`
+    ],
+    correctIndex: 0,
+    explain: 'Option A uses four spaces consistently at every level, matching the course standard. Option B actually runs without crashing (all tabs, consistently) — but this course\'s standard is four spaces, not tabs, so it doesn\'t follow the spec even though it technically executes. Option C still mixes tabs and spaces and throws a TabError. Option D has no indentation at all and won\'t run.'
+  },
+  {
+    id: 'q3',
+    topic: 'Indentation',
+    text: 'Storage is at 50%, well under the 90% warning threshold — but this script emails an alert anyway, every time it runs. Which fixes it?',
+    broken: `storage_used = 50\nif storage_used > 90:\n    print("Warning: storage almost full.")\nprint("Alert sent to admin.")`,
+    options: [
+      `storage_used = 50\nif storage_used > 90:\n    print("Warning: storage almost full.")\n    print("Alert sent to admin.")`,
+      `storage_used = 50\nif storage_used > 90:\n    print("Warning: storage almost full.")\nelif storage_used <= 90:\nprint("Alert sent to admin.")`,
+      `storage_used = 50\nif storage_used > 90:\n    print("Warning: storage almost full.")\nprint("Alert sent to admin.")`,
+      `storage_used = 50\nif storage_used > 90:\n    print("Warning: storage almost full.")\n        print("Alert sent to admin.")`
+    ],
+    correctIndex: 0,
+    explain: 'The alert line was at the same indentation level as the if, so it ran no matter what — exactly the "unconditional execution" trap from the reading. Indenting it under the if (option A) ties it to the condition. Option B still leaves it unindented and throws an IndentationError. Option D over-indents it, which is also invalid.'
+  },
+  {
+    id: 'q4',
+    topic: 'Operators',
+    text: 'This capacity check throws a SyntaxError immediately. Which fixes it?',
+    broken: `user_count = 5\nif user_count = 10:\n    print("At capacity.")`,
+    options: [
+      `user_count = 5\nif user_count == 10:\n    print("At capacity.")`,
+      `user_count = 5\nif user_count = 10:\n    print("At capacity.")`,
+      `user_count = 5\nif user_count => 10:\n    print("At capacity.")`,
+      `user_count = 5\nif (user_count = 10):\n    print("At capacity.")`
+    ],
+    correctIndex: 0,
+    explain: 'A single = is assignment, not comparison — Python doesn\'t allow assignment inside an if condition at all, so it\'s a SyntaxError rather than a silent bug. == is the comparison operator that actually belongs there. => isn\'t valid Python syntax, and wrapping the same broken = in parentheses doesn\'t fix anything.'
+  },
+  {
+    id: 'q5',
+    topic: 'Data Types',
+    text: 'This script crashes with a TypeError when printing the active user count. Which fixes it?',
+    broken: `active_users = 12\nprint("Active users: " + active_users)`,
+    options: [
+      `active_users = 12\nprint("Active users: " + str(active_users))`,
+      `active_users = 12\nprint("Active users: " + active_users)`,
+      `active_users = 12\nprint("Active users: " + int(active_users))`,
+      `active_users = 12\nprint("Active users: " * active_users)`
+    ],
+    correctIndex: 0,
+    explain: 'Python can\'t combine a string and an integer with +, since active_users is an int. Wrapping it in str() converts it to text first. int() in option C doesn\'t help — active_users is already an int, not a string, so that still fails. Option D technically runs, but * repeats the text 12 times instead of showing the count — clearly not the intended result.'
+  },
+  {
+    id: 'q6',
+    topic: 'Syntax',
+    text: 'A comment meant to explain this variable is instead causing a SyntaxError. Which fixes it?',
+    broken: `// Track failed login attempts\nfailed_attempts = 3\nprint(failed_attempts)`,
+    options: [
+      `# Track failed login attempts\nfailed_attempts = 3\nprint(failed_attempts)`,
+      `// Track failed login attempts\nfailed_attempts = 3\nprint(failed_attempts)`,
+      `/* Track failed login attempts */\nfailed_attempts = 3\nprint(failed_attempts)`,
+      `-- Track failed login attempts\nfailed_attempts = 3\nprint(failed_attempts)`
+    ],
+    correctIndex: 0,
+    explain: 'Python comments use #, not the // or /* */ styles from other languages, and not the -- style from SQL. None of those are valid comment syntax in Python — only # actually works.'
+  },
+  {
+    id: 'q7',
+    topic: 'Loops',
+    text: 'This is supposed to check devices numbered 1 through 5, but it only checks 1 through 4. Which fixes it?',
+    broken: `for device_num in range(1, 5):\n    print("Checking device", device_num)`,
+    options: [
+      `for device_num in range(1, 6):\n    print("Checking device", device_num)`,
+      `for device_num in range(5):\n    print("Checking device", device_num)`,
+      `for device_num in range(1, 5):\n    print("Checking device", device_num)`,
+      `for device_num in range(1, 5, 2):\n    print("Checking device", device_num)`
+    ],
+    correctIndex: 0,
+    explain: 'range(1, 5) stops before 5, so it only produces 1, 2, 3, 4. range(1, 6) correctly produces 1 through 5. range(5) is a common but different mistake — it produces 0 through 4, not 1 through 5. Adding a step of 2 (option D) skips numbers entirely.'
+  },
+  {
+    id: 'q8',
+    topic: 'Lists',
+    text: 'This script crashes with an IndexError trying to print the last device in the list. Which fixes it?',
+    broken: `devices = ["router1", "switch1", "firewall1"]\nprint("Last device:", devices[len(devices)])`,
+    options: [
+      `devices = ["router1", "switch1", "firewall1"]\nprint("Last device:", devices[len(devices) - 1])`,
+      `devices = ["router1", "switch1", "firewall1"]\nprint("Last device:", devices[len(devices)])`,
+      `devices = ["router1", "switch1", "firewall1"]\nprint("Last device:", devices[len(devices) + 1])`,
+      `devices = ["router1", "switch1", "firewall1"]\nprint("Last device:", devices[-2])`
+    ],
+    correctIndex: 0,
+    explain: 'List indexes start at 0, so the last valid index is len(devices) - 1, not len(devices) — using the length itself always points one item past the end. Option C makes the same kind of mistake, just further out of range. Option D runs without crashing, but -2 points to the second-to-last item ("switch1"), not the last one.'
+  },
+  {
+    id: 'q9',
+    topic: 'Functions',
+    text: 'Calling this function throws a SyntaxError before it ever runs. Which fixes it?',
+    broken: `def restart_service()\n    print("Service restarted.")\n\nrestart_service()`,
+    options: [
+      `def restart_service():\n    print("Service restarted.")\n\nrestart_service()`,
+      `def restart_service()\n    print("Service restarted.")\n\nrestart_service()`,
+      `def restart_service();\n    print("Service restarted.")\n\nrestart_service()`,
+      `def restart_service():\n    print("Service restarted.")`
+    ],
+    correctIndex: 0,
+    explain: 'A function definition needs a colon after the parentheses, same as an if statement. Option C swaps in a semicolon, which still fails. Option D adds the colon correctly but never actually calls the function afterward, so nothing happens when the script runs — it "works" without erroring, but doesn\'t do the job.'
+  },
+  {
+    id: 'q10',
+    topic: 'Logic',
+    text: 'This password checker is supposed to reject a password that fails EITHER the length rule or the "must contain a number" rule. Instead, it wrongly accepts a 14-character password with no digits at all. Which fixes it?',
+    broken: `password = "longenoughpass"\nlength_ok = len(password) >= 8\nhas_number = any(char.isdigit() for char in password)\n\nif not length_ok and not has_number:\n    print("Weak password.")\nelse:\n    print("Password accepted.")`,
+    options: [
+      `password = "longenoughpass"\nlength_ok = len(password) >= 8\nhas_number = any(char.isdigit() for char in password)\n\nif not length_ok or not has_number:\n    print("Weak password.")\nelse:\n    print("Password accepted.")`,
+      `password = "longenoughpass"\nlength_ok = len(password) >= 8\nhas_number = any(char.isdigit() for char in password)\n\nif not length_ok and not has_number:\n    print("Weak password.")\nelse:\n    print("Password accepted.")`,
+      `password = "longenoughpass"\nlength_ok = len(password) >= 8\nhas_number = any(char.isdigit() for char in password)\n\nif length_ok and has_number:\n    print("Weak password.")\nelse:\n    print("Password accepted.")`,
+      `password = "longenoughpass"\nlength_ok = len(password) >= 8\nhas_number = any(char.isdigit() for char in password)\n\nif not length_ok & not has_number:\n    print("Weak password.")\nelse:\n    print("Password accepted.")`
+    ],
+    correctIndex: 0,
+    explain: '"and" requires BOTH conditions to fail before flagging a weak password, so a password missing just one requirement slips through. "or" correctly flags it if EITHER check fails. Option C inverts the logic entirely — it would mark a genuinely strong password as weak. Option D swaps in &, which isn\'t valid there and throws a SyntaxError.'
+  }
+];
+
+function escapeHtml(str){
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+const examContainer = document.getElementById('examContainer');
+QUESTIONS.forEach((q, qi) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.qid = q.id;
+
+  card.innerHTML = `
+    <div class="q-meta">
+      <span class="q-index">Question ${qi + 1} of ${QUESTIONS.length}</span>
+      <span class="topic-chip">${q.topic}</span>
+    </div>
+    <p class="q-text">${q.text}</p>
+    <pre class="broken-code">${escapeHtml(q.broken)}</pre>
+    <div class="options">
+      ${q.options.map((opt, oi) => `
+        <label class="option" data-opt-index="${oi}">
+          <input type="radio" name="${q.id}" value="${oi}">
+          <pre>${escapeHtml(opt)}</pre>
+        </label>
+      `).join('')}
+    </div>
+    <div class="explain">${q.explain}</div>
+  `;
+  examContainer.appendChild(card);
+
+  card.querySelectorAll('.option').forEach(optEl => {
+    optEl.addEventListener('click', () => {
+      card.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      optEl.classList.add('selected');
+      optEl.querySelector('input').checked = true;
+    });
+  });
+});
+
+const checkBtn = document.getElementById('checkBtn');
+const resetBtn = document.getElementById('resetBtn');
+const scoreReadout = document.getElementById('scoreReadout');
+
+function gradeExam(){
+  let correct = 0;
+
+  QUESTIONS.forEach(q => {
+    const card = document.querySelector(`.card[data-qid="${q.id}"]`);
+    const selected = card.querySelector('input[type="radio"]:checked');
+    card.classList.add('checked');
+    card.classList.remove('correct', 'incorrect');
+    card.querySelectorAll('.option').forEach(o => o.classList.remove('answer-key'));
+
+    if (selected && parseInt(selected.value, 10) === q.correctIndex){
+      card.classList.add('correct');
+      correct++;
+    } else {
+      card.classList.add('incorrect');
+      const correctOpt = card.querySelector(`.option[data-opt-index="${q.correctIndex}"]`);
+      if (correctOpt) correctOpt.classList.add('answer-key');
+    }
+  });
+
+  scoreReadout.textContent = `${correct} / ${QUESTIONS.length} correct`;
+  scoreReadout.classList.toggle('complete', correct === QUESTIONS.length);
+
+  // Hook point: a real deployment (SCORM or LTI) would report the score here.
+
+  return { correct, total: QUESTIONS.length };
+}
+
+function resetExam(){
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('correct', 'incorrect', 'checked'));
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected', 'answer-key'));
+  scoreReadout.textContent = `0 / ${QUESTIONS.length} correct`;
+  scoreReadout.classList.remove('complete');
+}
+
+checkBtn.addEventListener('click', gradeExam);
+resetBtn.addEventListener('click', resetExam);
+</script>
+
+</body>
+</html>
