@@ -157,6 +157,31 @@ const COURSES = [
         href: "order-form-lab.html",
         instructorOnly: false
       },
+        { title: "SQL Fundamentals Quiz",
+        description: "SQL Fundamentals Quiz",
+        type: "Quiz",
+        week: "1",
+        updated: "2026-07-28",
+        href: "SQL-fundamentals-quiz.html",
+        instructorOnly: false
+      },
+         { title: "SQL Database Lab TV characters",
+        description: "Students will use queries to find different information",
+        type: "Lab",
+        week: "1",
+        updated: "2026-07-28",
+        href: "Tv-character-table-lab.html",
+        instructorOnly: false
+      },
+        { title: "Create a Database",
+        description: "Students will create their own Database",
+        type: "Lab",
+        week: "1",
+        updated: "2026-07-28",
+        href: "library-query-lab.html",
+        instructorOnly: false
+      },
+
      
     ]
   },
