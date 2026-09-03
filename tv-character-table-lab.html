@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTI 110 · TV Character Table Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1B1F27;
+    --ink-soft: #5B5F6B;
+    --accent: #E8A33D;
+    --accent-soft: #FCEACB;
+    --success: #2F9E44;
+    --success-soft: #E6F7EA;
+    --danger: #C4453C;
+    --code-bg: #10141C;
+    --code-text: #D8DEE9;
+    --border: #E0DCD1;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Space Grotesk',sans-serif; line-height:1.5; }
+  code, .mono{ font-family:'JetBrains Mono',monospace; }
+
+  header{ padding:28px 40px 22px; border-bottom:2px solid var(--ink); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; }
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase; }
+  h1.title{ margin:4px 0 0; font-size:28px; font-weight:700; }
+  h1.title .tag{ color:var(--accent); font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .course-badge{ font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--ink); color:var(--bg); padding:6px 12px; border-radius:3px; }
+
+  main{ display:grid; grid-template-columns: 360px 1fr; gap:0; min-height: calc(100vh - 96px); }
+  @media (max-width: 940px){ main{ grid-template-columns: 1fr; } }
+
+  .panel-instructions{ padding:28px 28px 40px; border-right:2px solid var(--ink); }
+  @media (max-width:940px){ .panel-instructions{ border-right:none; border-bottom:2px solid var(--ink); } }
+  .panel-instructions h2{ font-size:15px; text-transform:uppercase; letter-spacing:.06em; margin:24px 0 12px; }
+  .panel-instructions h2:first-of-type{ margin-top:0; }
+  .panel-instructions p{ color:var(--ink-soft); font-size:13.5px; }
+
+  .goal-box{ background:var(--accent-soft); border:1px solid var(--accent); border-radius:4px; padding:14px 16px; font-size:14px; margin-bottom:8px; }
+  .goal-box strong{ display:block; margin-bottom:4px; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:#8a5b12;}
+
+  .spec-line{ font-size:13.5px; color:var(--ink-soft); margin:4px 0; padding-left:14px; position:relative; }
+  .spec-line::before{ content:"•"; position:absolute; left:0; color:var(--accent); }
+
+  .inspector-list{ list-style:none; margin:0; padding:0; }
+  .inspector-list li{ display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .tag-chip{ font-family:'JetBrains Mono',monospace; font-size:10.5px; background:var(--ink); color:var(--bg); padding:3px 6px; border-radius:3px; white-space:nowrap; margin-top:1px; }
+  .status-dot{ width:10px; height:10px; border-radius:50%; background:#D8D4C6; flex-shrink:0; margin-top:4px; transition:background .2s ease; }
+  .inspector-list li.pass .status-dot{ background:var(--success); }
+  .inspector-list li.fail .status-dot{ background:var(--danger); }
+  .inspector-list li.pass .task-text{ color:var(--ink-soft); text-decoration:line-through; }
+
+  .panel-work{ padding:28px 32px 40px; }
+  .work-block{ margin-bottom:22px; }
+  .work-label{ font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; }
+  .file-badge{ font-family:'JetBrains Mono',monospace; font-size:10px; background:var(--border); color:var(--ink-soft); padding:2px 8px; border-radius:3px; }
+  textarea#editor{
+    width:100%; min-height:280px; background:var(--code-bg); color:var(--code-text);
+    font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.6;
+    border:none; border-radius:6px; padding:16px; resize:vertical; tab-size:4; white-space:pre;
+  }
+  textarea#editor:focus{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  #output{
+    width:100%; min-height:140px; background:var(--code-bg); color:var(--code-text);
+    font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.6;
+    border-radius:6px; padding:16px; white-space:pre-wrap; word-break:break-word; overflow-x:auto;
+  }
+  #output.empty{ color:var(--ink-soft); font-style:italic; }
+  #output table{ border-collapse:collapse; width:100%; font-size:12px; }
+  #output th, #output td{ border:1px solid #333; padding:4px 8px; text-align:left; }
+  #output th{ color:var(--accent); }
+
+  .btn-row{ display:flex; gap:12px; align-items:center; margin-top:18px; flex-wrap:wrap; }
+  button{ font-family:'JetBrains Mono',monospace; font-size:14px; border:none; padding:12px 22px; border-radius:4px; cursor:pointer; }
+  button#runBtn{ background:#3B7BC4; color:#fff; }
+  button#runBtn:hover{ background:#2f66a3; }
+  button#runBtn:disabled{ background:var(--border); color:var(--ink-soft); cursor:not-allowed; }
+  button#checkBtn{ background:var(--ink); color:var(--bg); }
+  button#checkBtn:hover{ background:#333; }
+  button#checkBtn:disabled{ background:var(--border); color:var(--ink-soft); cursor:not-allowed; }
+  button#resetBtn{ font-size:13px; background:transparent; color:var(--ink-soft); border:1px solid var(--border); padding:11px 16px; }
+  button#resetBtn:hover{ border-color: var(--ink); color:var(--ink); }
+
+  .score-readout{ font-family:'JetBrains Mono',monospace; font-size:14px; padding:8px 14px; border-radius:4px; background:var(--border); }
+  .score-readout.complete{ background:var(--success-soft); color:var(--success); border:1px solid var(--success); }
+
+  .banner{ margin-top:18px; padding:14px 16px; border-radius:5px; font-size:14px; display:none; }
+  .banner.show{ display:block; }
+  .banner.win{ background:var(--success-soft); border:1px solid var(--success); color:#1e6b30; }
+  .banner.loading{ background:var(--accent-soft); border:1px solid var(--accent); color:#8a5b12; }
+
+  .note{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; }
+
+  footer{ text-align:center; font-size:12px; color:var(--ink-soft); padding:20px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">CTI 110 &middot; Intro to Databases</div>
+    <h1 class="title"><span class="tag">&lt;lab n="01"&gt;</span> TV Character Table</h1>
+  </div>
+  <div class="course-badge">auto-graded</div>
+</header>
+
+<main>
+  <section class="panel-instructions">
+    <div class="goal-box">
+      <strong>Objective</strong>
+      Design and build your own database table, populated with characters from your favorite TV show.
+    </div>
+    <p>Your SQL runs for real in this page (a SQLite database loads in your browser). Use <strong>Run Code</strong> to see your table, then <strong>Check My Work</strong> when you're ready to be graded.</p>
+
+    <h2>What Your Table Needs</h2>
+    <div class="spec-line">Name your table <code>characters</code>.</div>
+    <div class="spec-line">Give it a column that serves as the primary key.</div>
+    <div class="spec-line">Include at least one column that stores whole numbers (e.g., a character's age).</div>
+    <div class="spec-line">Include at least one column that stores text (e.g., a character's name).</div>
+    <div class="spec-line">Insert at least 3 characters from a single TV show — your choice.</div>
+
+    <p style="margin-top:14px;">Beyond those requirements, the columns are up to you — add whatever fits your show (occupation, hometown, catchphrase, whatever makes sense).</p>
+
+    <h2 style="margin-top:26px;">Task Checklist</h2>
+    <ul class="inspector-list" id="inspectorList">
+      <li data-check="runs-clean"><span class="status-dot"></span><span class="tag-chip">no errors</span><span class="task-text">Your SQL runs without errors</span></li>
+      <li data-check="table-exists"><span class="status-dot"></span><span class="tag-chip">CREATE TABLE</span><span class="task-text">A table named "characters" exists</span></li>
+      <li data-check="has-pk"><span class="status-dot"></span><span class="tag-chip">PRIMARY KEY</span><span class="task-text">The table has a primary key column</span></li>
+      <li data-check="has-types"><span class="status-dot"></span><span class="tag-chip">INT / VARCHAR</span><span class="task-text">The table uses at least one whole-number column and one text column</span></li>
+      <li data-check="row-count"><span class="status-dot"></span><span class="tag-chip">INSERT</span><span class="task-text">At least 3 characters are inserted</span></li>
+      <li data-check="pk-unique"><span class="status-dot"></span><span class="tag-chip">unique</span><span class="task-text">Every character has a unique primary key value</span></li>
+    </ul>
+  </section>
+
+  <section class="panel-work">
+    <div class="work-block">
+      <label class="work-label" for="editor"><span>Your SQL</span><span class="file-badge">characters.sql</span></label>
+      <textarea id="editor" spellcheck="false">-- Create your "characters" table here.
+-- Then insert at least 3 characters from your favorite show.
+
+</textarea>
+    </div>
+
+    <div class="work-block">
+      <label class="work-label"><span>Output</span></label>
+      <div id="output" class="empty">Click "Run Code" to see your table here.</div>
+    </div>
+
+    <div class="btn-row">
+      <button id="runBtn" disabled>Loading Database...</button>
+      <button id="checkBtn" disabled>Check My Work</button>
+      <button id="resetBtn">Reset to Starter</button>
+      <span class="score-readout" id="scoreReadout">0 / 6 tasks complete</span>
+    </div>
+
+    <div class="banner loading show" id="loadingBanner">
+      Loading the database engine in your browser — this can take a few seconds the first time.
+    </div>
+    <div class="banner win" id="winBanner">
+      All 6 tasks complete. Your table is structured correctly and populated with your characters.
+    </div>
+  </section>
+</main>
+
+<footer>CTI 110 — TV Character Table Lab &middot; Score is calculated locally in your browser</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
+<script>
+  const STARTER = document.getElementById('editor').value;
+
+  const editor = document.getElementById('editor');
+  const outputEl = document.getElementById('output');
+  const runBtn = document.getElementById('runBtn');
+  const checkBtn = document.getElementById('checkBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const scoreReadout = document.getElementById('scoreReadout');
+  const winBanner = document.getElementById('winBanner');
+  const loadingBanner = document.getElementById('loadingBanner');
+  const items = document.querySelectorAll('#inspectorList li');
+
+  let SQL = null;
+
+  async function initSql(){
+    SQL = await initSqlJs({ locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/${file}` });
+    loadingBanner.classList.remove('show');
+    runBtn.disabled = false;
+    checkBtn.disabled = false;
+    runBtn.textContent = 'Run Code';
+  }
+  initSql();
+
+  function renderResultsAsHtml(execResults){
+    if (!execResults || execResults.length === 0) return '(No rows returned.)';
+    return execResults.map(res => {
+      const head = '<tr>' + res.columns.map(c => `<th>${c}</th>`).join('') + '</tr>';
+      const rows = res.values.map(row => '<tr>' + row.map(v => `<td>${v === null ? 'NULL' : v}</td>`).join('') + '</tr>').join('');
+      return `<table>${head}${rows}</table>`;
+    }).join('<br>');
+  }
+
+  async function handleRun(){
+    outputEl.classList.remove('empty');
+    outputEl.textContent = 'Running...';
+    try {
+      const db = new SQL.Database();
+      db.run(editor.value);
+      const results = db.exec('SELECT * FROM characters');
+      outputEl.innerHTML = renderResultsAsHtml(results);
+      db.close();
+    } catch (e) {
+      outputEl.textContent = 'Error: ' + e.message;
+    }
+  }
+
+  function gradeWork(){
+    const results = {
+      'runs-clean': false, 'table-exists': false, 'has-pk': false,
+      'has-types': false, 'row-count': false, 'pk-unique': false
+    };
+
+    let db;
+    try {
+      db = new SQL.Database();
+      db.run(editor.value);
+      results['runs-clean'] = true;
+    } catch (e) {
+      return results;
+    }
+
+    try {
+      const tableCheck = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND lower(name)='characters'");
+      if (!tableCheck.length || !tableCheck[0].values.length) {
+        db.close();
+        return results;
+      }
+      results['table-exists'] = true;
+
+      const pragma = db.exec("PRAGMA table_info(characters)");
+      const columns = pragma[0].values; // [cid, name, type, notnull, dflt_value, pk]
+      const pkColumns = columns.filter(c => c[5] > 0);
+      results['has-pk'] = pkColumns.length > 0;
+
+      const typesSeen = columns.map(c => String(c[2]).toUpperCase());
+      const hasInt = typesSeen.some(t => t.includes('INT'));
+      const hasText = typesSeen.some(t => t.includes('TEXT') || t.includes('VARCHAR') || t.includes('CHAR'));
+      results['has-types'] = hasInt && hasText;
+
+      const countRes = db.exec("SELECT COUNT(*) FROM characters");
+      const count = countRes[0].values[0][0];
+      results['row-count'] = count >= 3;
+
+      if (pkColumns.length > 0) {
+        const pkName = pkColumns[0][1];
+        const dupeRes = db.exec(`SELECT ${pkName}, COUNT(*) as c FROM characters GROUP BY ${pkName} HAVING c > 1`);
+        const dupeCount = (dupeRes.length && dupeRes[0].values) ? dupeRes[0].values.length : 0;
+        results['pk-unique'] = dupeCount === 0;
+      }
+
+      db.close();
+    } catch (e) {
+      if (db) db.close();
+    }
+
+    return results;
+  }
+
+  function updateUI(results){
+    let passed = 0;
+    items.forEach(li => {
+      const key = li.dataset.check;
+      const ok = results[key];
+      li.classList.toggle('pass', !!ok);
+      li.classList.toggle('fail', !ok);
+      if (ok) passed++;
+    });
+    const total = items.length;
+    scoreReadout.textContent = `${passed} / ${total} tasks complete`;
+    scoreReadout.classList.toggle('complete', passed === total);
+    winBanner.classList.toggle('show', passed === total);
+
+    // Hook point: a real deployment (SCORM or LTI) would report the score here.
+
+    return { passed, total };
+  }
+
+  function handleCheck(){
+    const results = gradeWork();
+    updateUI(results);
+  }
+
+  runBtn.addEventListener('click', handleRun);
+  checkBtn.addEventListener('click', handleCheck);
+  resetBtn.addEventListener('click', () => {
+    editor.value = STARTER;
+    outputEl.textContent = 'Click "Run Code" to see your table here.';
+    outputEl.classList.add('empty');
+    items.forEach(li => li.classList.remove('pass', 'fail'));
+    scoreReadout.textContent = '0 / 6 tasks complete';
+    scoreReadout.classList.remove('complete');
+    winBanner.classList.remove('show');
+  });
+</script>
+
+</body>
+</html>

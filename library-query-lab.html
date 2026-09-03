@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTI 110 · Library Query Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FAF9F6;
+    --ink: #1B1F27;
+    --ink-soft: #5B5F6B;
+    --accent: #E8A33D;
+    --accent-soft: #FCEACB;
+    --success: #2F9E44;
+    --success-soft: #E6F7EA;
+    --danger: #C4453C;
+    --danger-soft: #FBE9E7;
+    --code-bg: #10141C;
+    --code-text: #D8DEE9;
+    --border: #E0DCD1;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Space Grotesk',sans-serif; line-height:1.5; }
+  code, .mono{ font-family:'JetBrains Mono',monospace; }
+
+  header{ padding:28px 40px 22px; border-bottom:2px solid var(--ink); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; }
+  .eyebrow{ font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase; }
+  h1.title{ margin:4px 0 0; font-size:28px; font-weight:700; }
+  h1.title .tag{ color:var(--accent); font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .course-badge{ font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--ink); color:var(--bg); padding:6px 12px; border-radius:3px; }
+
+  main{ max-width:900px; margin:0 auto; padding:32px 24px 60px; }
+
+  .intro-note{ font-size:13.5px; color:var(--ink-soft); background:var(--accent-soft); border:1px solid var(--accent); border-radius:6px; padding:14px 16px; margin-bottom:20px; }
+  .intro-note strong{ color:var(--ink); }
+  .intro-note code{ font-size:12.5px; }
+
+  .data-panel{ background:var(--card, #fff); border:1px solid var(--border); border-radius:8px; padding:18px 20px; margin-bottom:24px; }
+  .data-panel h2{ font-size:14px; text-transform:uppercase; letter-spacing:.06em; margin:0 0 10px; font-family:'JetBrains Mono',monospace; color:var(--ink-soft); }
+  .data-table-wrap{ overflow-x:auto; }
+  table.ref-table{ border-collapse:collapse; width:100%; font-size:12.5px; }
+  table.ref-table th, table.ref-table td{ border:1px solid var(--border); padding:6px 10px; text-align:left; white-space:nowrap; }
+  table.ref-table th{ background:var(--bg); font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--ink-soft); }
+
+  .task-card{ background:#fff; border:1px solid var(--border); border-radius:8px; padding:20px 22px; margin-bottom:16px; transition: border-color .2s ease, background .2s ease; }
+  .task-card.correct{ border-color:var(--success); background:var(--success-soft); }
+  .task-card.incorrect{ border-color:var(--danger); background:var(--danger-soft); }
+
+  .task-index{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink-soft); display:block; margin-bottom:6px; }
+  .task-text{ font-size:15px; font-weight:600; margin:0 0 12px; }
+  .task-warning{ font-size:12.5px; color:#8a2f27; background:var(--danger-soft); border:1px solid var(--danger); border-radius:4px; padding:8px 10px; margin-bottom:12px; }
+
+  textarea.task-editor{
+    width:100%; min-height:70px; background:var(--code-bg); color:var(--code-text);
+    font-family:'JetBrains Mono',monospace; font-size:13px; line-height:1.5;
+    border:none; border-radius:6px; padding:12px 14px; resize:vertical; white-space:pre;
+  }
+  textarea.task-editor:focus{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .task-feedback{ display:none; font-size:12.5px; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); color:var(--ink-soft); }
+  .task-card.checked .task-feedback{ display:block; }
+
+  .sticky-bar{ position:sticky; bottom:0; background:var(--bg); border-top:2px solid var(--ink); padding:16px 24px; display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:20px; }
+  button{ font-family:'JetBrains Mono',monospace; font-size:14px; border:none; padding:12px 24px; border-radius:4px; cursor:pointer; }
+  button#checkBtn{ background:var(--ink); color:var(--bg); }
+  button#checkBtn:hover{ background:#333; }
+  button#checkBtn:disabled{ background:var(--border); color:var(--ink-soft); cursor:not-allowed; }
+  button#resetBtn{ font-size:13px; background:transparent; color:var(--ink-soft); border:1px solid var(--border); padding:11px 16px; }
+  button#resetBtn:hover{ border-color:var(--ink); color:var(--ink); }
+  .score-readout{ font-family:'JetBrains Mono',monospace; font-size:14px; padding:8px 14px; border-radius:4px; background:var(--border); }
+  .score-readout.complete{ background:var(--success-soft); color:var(--success); border:1px solid var(--success); }
+
+  .banner{ margin-bottom:20px; padding:14px 16px; border-radius:5px; font-size:14px; display:none; }
+  .banner.show{ display:block; }
+  .banner.loading{ background:var(--accent-soft); border:1px solid var(--accent); color:#8a5b12; }
+
+  footer{ text-align:center; font-size:12px; color:var(--ink-soft); padding:20px; font-family:'JetBrains Mono',monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="eyebrow">CTI 110 &middot; Intro to Databases</div>
+    <h1 class="title"><span class="tag">&lt;lab n="02"&gt;</span> Library Query Practice</h1>
+  </div>
+  <div class="course-badge">auto-graded</div>
+</header>
+
+<main>
+  <p class="intro-note">
+    <strong>The table is already built for you.</strong> A <code>books</code> table is pre-loaded below with real data — you don't need to create it. Write one SQL statement per task to answer each question. For SELECT tasks, use <code>SELECT *</code> so every column comes back.
+  </p>
+
+  <div class="banner loading show" id="loadingBanner">Loading the database engine in your browser — this can take a few seconds the first time.</div>
+
+  <div class="data-panel">
+    <h2>books table</h2>
+    <div class="data-table-wrap" id="dataPreview"></div>
+  </div>
+
+  <div id="taskContainer"></div>
+</main>
+
+<div class="sticky-bar">
+  <button id="checkBtn" disabled>Check My Work</button>
+  <button id="resetBtn">Reset All Answers</button>
+  <span class="score-readout" id="scoreReadout">0 / 7 correct</span>
+</div>
+
+<footer>CTI 110 — Library Query Lab &middot; Score is calculated locally in your browser</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/sql-wasm.js"></script>
+<script>
+const DATASET_SQL = `
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY,
+    title VARCHAR,
+    author VARCHAR,
+    genre VARCHAR,
+    published_year INT,
+    status VARCHAR
+);
+
+INSERT INTO books (id, title, author, genre, published_year, status) VALUES
+(1, 'The Silver Compass', 'Rowan Ashworth', 'Fantasy', 2011, 'Available'),
+(2, 'Midnight in the Archive', 'Elena Marsh', 'Mystery', 1998, 'Checked Out'),
+(3, 'The Last Signal', 'Priya Chandran', 'Science Fiction', 2019, 'Available'),
+(4, 'Autumn of the Wolf', 'Rowan Ashworth', 'Fantasy', 2016, 'Checked Out'),
+(5, 'The Quiet Ledger', 'Marcus Ito', 'Non-Fiction', 1975, 'Available'),
+(6, 'Vermillion Harbor', 'Elena Marsh', 'Mystery', 2005, 'Available'),
+(7, 'A Century of Static', 'Priya Chandran', 'Science Fiction', 1989, 'Checked Out'),
+(8, 'The Cartographer''s Daughter', 'Naomi Fitch', 'Fantasy', 2003, 'Available'),
+(9, 'Bright Water, Dark Sky', 'Marcus Ito', 'Non-Fiction', 2020, 'Checked Out'),
+(10, 'The Vanishing Hour', 'Elena Marsh', 'Mystery', 2014, 'Available'),
+(11, 'Echoes of Proxima', 'Priya Chandran', 'Science Fiction', 2001, 'Available'),
+(12, 'The Orchard Keeper''s Son', 'Naomi Fitch', 'Fantasy', 1994, 'Available'),
+(13, 'Ledger of Small Debts', 'Marcus Ito', 'Non-Fiction', 1968, 'Checked Out'),
+(14, 'The Glass Cartel', 'Diego Fuentes', 'Mystery', 2022, 'Available'),
+(15, 'Wind Over the Salt Flats', 'Diego Fuentes', 'Fantasy', 2008, 'Available');
+`;
+
+// Reference solutions are used only internally for grading — never shown to students.
+const TASKS = [
+  {
+    id: 't1',
+    text: 'Write a query that returns every book that is currently "Available".',
+    type: 'select',
+    ordered: false,
+    reference: "SELECT * FROM books WHERE status = 'Available'"
+  },
+  {
+    id: 't2',
+    text: 'Write a query that returns every book in the "Mystery" genre.',
+    type: 'select',
+    ordered: false,
+    reference: "SELECT * FROM books WHERE genre = 'Mystery'"
+  },
+  {
+    id: 't3',
+    text: 'Write a query that returns every book published before the year 2000, with the newest of those books listed first.',
+    type: 'select',
+    ordered: true,
+    reference: "SELECT * FROM books WHERE published_year < 2000 ORDER BY published_year DESC"
+  },
+  {
+    id: 't4',
+    text: 'Write a query that returns every book that was NOT written by Priya Chandran.',
+    type: 'select',
+    ordered: false,
+    reference: "SELECT * FROM books WHERE author <> 'Priya Chandran'"
+  },
+  {
+    id: 't5',
+    text: 'Write a query that returns every book sorted by title in descending (Z to A) order.',
+    type: 'select',
+    ordered: true,
+    reference: "SELECT * FROM books ORDER BY title DESC"
+  },
+  {
+    id: 't6',
+    text: 'Update the record for "The Last Signal" so its status is "Checked Out". Only that one book should change.',
+    type: 'mutation',
+    warning: 'Careful — an UPDATE without a WHERE clause changes every row in the table.',
+    verify: (db) => {
+      const before = getFullState(db);
+      return before;
+    },
+    reference: "UPDATE books SET status = 'Checked Out' WHERE id = 3"
+  },
+  {
+    id: 't7',
+    text: 'Delete the record for "Ledger of Small Debts" from the table. Only that one book should be removed.',
+    type: 'mutation',
+    warning: 'Careful — a DELETE without a WHERE clause erases the entire table.',
+    reference: "DELETE FROM books WHERE id = 13"
+  }
+];
+
+let SQL = null;
+
+async function initSql(){
+  SQL = await initSqlJs({ locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js@1.10.3/dist/${file}` });
+  document.getElementById('loadingBanner').classList.remove('show');
+  document.getElementById('checkBtn').disabled = false;
+  renderDataPreview();
+}
+initSql();
+
+function freshDb(){
+  const db = new SQL.Database();
+  db.run(DATASET_SQL);
+  return db;
+}
+
+function execToRows(db, sql){
+  const res = db.exec(sql);
+  if (!res.length) return [];
+  return res[0].values;
+}
+
+function getIds(db, sql){
+  return execToRows(db, sql).map(row => row[0]);
+}
+
+function getFullState(db){
+  return execToRows(db, "SELECT id, title, author, genre, published_year, status FROM books ORDER BY id");
+}
+
+function renderDataPreview(){
+  const db = freshDb();
+  const res = db.exec("SELECT * FROM books");
+  const container = document.getElementById('dataPreview');
+  if (res.length) {
+    const head = '<tr>' + res[0].columns.map(c => `<th>${c}</th>`).join('') + '</tr>';
+    const rows = res[0].values.map(row => '<tr>' + row.map(v => `<td>${v}</td>`).join('') + '</tr>').join('');
+    container.innerHTML = `<table class="ref-table">${head}${rows}</table>`;
+  }
+  db.close();
+}
+
+const taskContainer = document.getElementById('taskContainer');
+TASKS.forEach((task, i) => {
+  const card = document.createElement('div');
+  card.className = 'task-card';
+  card.dataset.taskId = task.id;
+  card.innerHTML = `
+    <span class="task-index">Task ${i + 1} of ${TASKS.length}</span>
+    <p class="task-text">${task.text}</p>
+    ${task.warning ? `<div class="task-warning">${task.warning}</div>` : ''}
+    <textarea class="task-editor" placeholder="Write your SQL statement here..."></textarea>
+    <div class="task-feedback"></div>
+  `;
+  taskContainer.appendChild(card);
+});
+
+function gradeSelectTask(task, studentSql){
+  const dbRef = freshDb();
+  const dbStudent = freshDb();
+  let refIds, studentIds;
+  try {
+    refIds = getIds(dbRef, task.reference);
+  } finally {
+    dbRef.close();
+  }
+  try {
+    studentIds = getIds(dbStudent, studentSql);
+  } catch (e) {
+    dbStudent.close();
+    return { passed: false, message: 'Your query has an error: ' + e.message };
+  }
+  dbStudent.close();
+
+  let passed;
+  if (task.ordered) {
+    passed = JSON.stringify(refIds) === JSON.stringify(studentIds);
+  } else {
+    const sortedRef = [...refIds].sort((a,b) => a-b);
+    const sortedStudent = [...studentIds].sort((a,b) => a-b);
+    passed = JSON.stringify(sortedRef) === JSON.stringify(sortedStudent);
+  }
+
+  if (passed) return { passed: true, message: `Correct — returned ${studentIds.length} book(s).` };
+  return { passed: false, message: `Expected ${refIds.length} book(s), your query returned ${studentIds.length}. Double-check your condition${task.ordered ? ' and sort order' : ''}.` };
+}
+
+function gradeMutationTask(task, studentSql){
+  const dbExpected = freshDb();
+  dbExpected.run(task.reference);
+  const expectedState = getFullState(dbExpected);
+  dbExpected.close();
+
+  const dbStudent = freshDb();
+  let studentState;
+  try {
+    dbStudent.run(studentSql);
+    studentState = getFullState(dbStudent);
+  } catch (e) {
+    dbStudent.close();
+    return { passed: false, message: 'Your statement has an error: ' + e.message };
+  }
+  dbStudent.close();
+
+  const passed = JSON.stringify(expectedState) === JSON.stringify(studentState);
+  if (passed) return { passed: true, message: 'Correct — exactly the right row changed, nothing else.' };
+
+  if (studentState.length !== expectedState.length) {
+    return { passed: false, message: `Expected ${expectedState.length} rows remaining, found ${studentState.length}. Did you forget a WHERE clause?` };
+  }
+  return { passed: false, message: 'The table doesn\'t match what\'s expected — check that you targeted the right row and didn\'t accidentally change others.' };
+}
+
+function gradeAll(){
+  let correct = 0;
+
+  TASKS.forEach(task => {
+    const card = document.querySelector(`.task-card[data-task-id="${task.id}"]`);
+    const studentSql = card.querySelector('.task-editor').value.trim();
+    const feedbackEl = card.querySelector('.task-feedback');
+    card.classList.add('checked');
+    card.classList.remove('correct', 'incorrect');
+
+    if (!studentSql) {
+      card.classList.add('incorrect');
+      feedbackEl.textContent = 'No query entered yet.';
+      return;
+    }
+
+    const result = task.type === 'select'
+      ? gradeSelectTask(task, studentSql)
+      : gradeMutationTask(task, studentSql);
+
+    card.classList.toggle('correct', result.passed);
+    card.classList.toggle('incorrect', !result.passed);
+    feedbackEl.textContent = result.message;
+    if (result.passed) correct++;
+  });
+
+  const scoreReadout = document.getElementById('scoreReadout');
+  scoreReadout.textContent = `${correct} / ${TASKS.length} correct`;
+  scoreReadout.classList.toggle('complete', correct === TASKS.length);
+
+  // Hook point: a real deployment (SCORM or LTI) would report the score here.
+
+  return { correct, total: TASKS.length };
+}
+
+document.getElementById('checkBtn').addEventListener('click', gradeAll);
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.querySelectorAll('.task-editor').forEach(t => t.value = '');
+  document.querySelectorAll('.task-card').forEach(c => c.classList.remove('correct', 'incorrect', 'checked'));
+  const scoreReadout = document.getElementById('scoreReadout');
+  scoreReadout.textContent = `0 / ${TASKS.length} correct`;
+  scoreReadout.classList.remove('complete');
+});
+</script>
+
+</body>
+</html>
