@@ -125,6 +125,38 @@ const COURSES = [
         href: "prompt-engineering-lab.html",
         instructorOnly: false
       },
+       {title: "Python Lab 1",
+        description: "Python",
+        type: "Lab",
+        week: "1",
+        updated: "2026-07-28",
+        href: "python-automation-lab.html",
+        instructorOnly: false
+      },
+       {title: "Python Troubleshooting Lab",
+        description: "Fix the incorrect Python code",
+        type: "Lab",
+        week: "1",
+        updated: "2026-07-28",
+        href: "python-troubleshooting-exam.html",
+        instructorOnly: false
+      },
+      { title: "Python Fundamentals Quiz",
+        description: "Quiz Checking understanding on fundamental Python Elements",
+        type: "Quiz",
+        week: "1",
+        updated: "2026-07-28",
+        href: "python-fundamentals-quiz.html",
+        instructorOnly: false
+      },
+      { title: "Order Form Project",
+        description: "Build a basic order form using Python",
+        type: "Quiz",
+        week: "1",
+        updated: "2026-07-28",
+        href: "order-form-lab.html",
+        instructorOnly: false
+      },
      
     ]
   },
