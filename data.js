@@ -181,6 +181,14 @@ const COURSES = [
         href: "library-query-lab.html",
         instructorOnly: false
       },
+       { title: "Teaching Demo",
+        description: "Teaching Demo",
+        type: "Lab",
+        week: "1",
+        updated: "2026-07-28",
+        href: "teaching-demo-sql.html",
+        instructorOnly: false
+      },
 
      
     ]
