@@ -1,0 +1,538 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Subnet Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* Layout: a single working column of numbered steps under a control band; bits colored like T568B cable pairs (blue = network, orange = borrowed subnet bits, green = host). */
+:root {
+  --bg: #eef1f4; --panel: #ffffff; --ink: #17202b; --muted: #5b6878; --line: #d3dae2; --soft: #f5f7f9;
+  --net: #1f5fbf; --net-tint: #dbe6f8;
+  --sub: #c4600d; --sub-tint: #fbe4cf;
+  --host: #237a40; --host-tint: #d9efe0;
+  --ok: #237a40; --bad: #b83232; --focus: #1f5fbf;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f141a; --panel: #172029; --ink: #e4eaf1; --muted: #93a1b1; --line: #2a3644; --soft: #1c2631;
+  --net: #78a9f2; --net-tint: #1b2d48; --sub: #f2a560; --sub-tint: #3e2a16; --host: #63cc88; --host-tint: #16331f;
+  --ok: #63cc88; --bad: #f07f7f; --focus: #78a9f2; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f141a; --panel: #172029; --ink: #e4eaf1; --muted: #93a1b1; --line: #2a3644; --soft: #1c2631;
+  --net: #78a9f2; --net-tint: #1b2d48; --sub: #f2a560; --sub-tint: #3e2a16; --host: #63cc88; --host-tint: #16331f;
+  --ok: #63cc88; --bad: #f07f7f; --focus: #78a9f2; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px 64px; }
+.wrap { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+h1 { font-family: var(--f-display); font-stretch: 118%; font-weight: 800; font-size: clamp(30px, 6vw, 46px); line-height: 1; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+h2 { font-family: var(--f-display); font-stretch: 112%; font-weight: 750; font-size: 20px; margin: 0; text-wrap: balance; display: flex; gap: 12px; align-items: baseline; }
+h2 .n { font-family: var(--f-mono); font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .04em; }
+p { margin: 0; max-width: 68ch; }
+.lede { color: var(--muted); font-size: 16px; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+
+header { display: flex; flex-direction: column; gap: 10px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+.controls { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+label.f { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); min-width: 0; }
+input[type=text], select, .check input { font-family: var(--f-mono); font-size: 16px; color: var(--ink); background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; width: 100%; min-width: 0; }
+input[type=range] { width: 100%; accent-color: var(--sub); }
+.borrow-row { display: flex; align-items: center; gap: 10px; }
+.borrow-row output { font-family: var(--f-mono); font-size: 16px; font-weight: 700; color: var(--sub); min-width: 2ch; text-align: right; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.presets span { font-size: 13px; color: var(--muted); margin-right: 4px; }
+button { font-family: var(--f-body); font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 6px; border: 1px solid var(--line); background: var(--soft); color: var(--ink); padding: 7px 12px; }
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.msg { font-size: 14px; padding: 9px 12px; border-radius: 6px; background: var(--sub-tint); color: var(--ink); border-left: 3px solid var(--sub); }
+.msg.err { background: transparent; border-left-color: var(--bad); color: var(--bad); }
+
+.plan { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 8px; background: var(--soft); border: 1px dashed var(--line); }
+.plan-head { font-size: 14px; display: flex; flex-wrap: wrap; gap: 8px; }
+.plan input[type=text] { background: var(--panel); }
+.plan-btn { justify-content: flex-end; }
+.planout { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+.planout .mono { font-size: 13.5px; }
+.planout.bad { border-left: 3px solid var(--bad); }
+.planout.good { border-left: 3px solid var(--ok); }
+.msg button { margin-left: 8px; padding: 4px 10px; font-size: 13px; }
+section.step { display: flex; flex-direction: column; gap: 12px; padding-top: 18px; border-top: 1px solid var(--line); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+.legend .ln i { background: var(--net); } .legend .ls i { background: var(--sub); } .legend .lh i { background: var(--host); }
+
+.octets { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 860px) { .octets { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 460px) { .octets { grid-template-columns: minmax(0, 1fr); } }
+.oct { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px; min-width: 0; }
+.oct.focus { border-color: var(--sub); box-shadow: 0 0 0 1px var(--sub); }
+.oct-title { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.row { display: grid; grid-template-columns: 34px repeat(8, minmax(0, 1fr)) 40px; gap: 3px; align-items: center; }
+.row + .row { margin-top: 3px; }
+.rl { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--muted); }
+.pv { font-family: var(--f-mono); font-size: 9.5px; color: var(--muted); text-align: center; }
+.dec { font-family: var(--f-mono); font-weight: 700; text-align: right; font-size: 14px; font-variant-numeric: tabular-nums; }
+.bit { font-family: var(--f-mono); font-weight: 700; font-size: 14px; text-align: center; height: 28px; line-height: 28px; border-radius: 4px; border: 1px solid transparent; padding: 0; }
+.bit.p-net { background: var(--net-tint); color: var(--net); }
+.bit.p-sub { background: var(--sub-tint); color: var(--sub); }
+.bit.p-host { background: var(--host-tint); color: var(--host); }
+.bit.zero { opacity: .55; }
+button.bit { cursor: pointer; }
+button.bit:hover { border-color: currentColor; }
+button.bit.locked { cursor: default; }
+button.bit.locked:hover { border-color: transparent; }
+.bit.hidden { background: var(--soft); color: var(--muted); border: 1px dashed var(--line); opacity: 1; }
+.bit.cur { box-shadow: 0 0 0 2px var(--ink); }
+.and-row { padding-top: 3px; border-top: 1px dashed var(--line); margin-top: 5px !important; }
+.sums { font-family: var(--f-mono); font-size: 12px; color: var(--muted); margin-top: 6px; min-height: 1.4em; overflow-wrap: anywhere; }
+
+.stepper { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.explain { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 15px; }
+.explain .mono { font-weight: 700; }
+
+.math { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+.math table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.math td { padding: 10px 14px; border-top: 1px solid var(--line); vertical-align: top; }
+.math tr:first-child td { border-top: 0; }
+.math td:first-child { font-weight: 650; white-space: nowrap; width: 1%; }
+.math td.res { font-family: var(--f-mono); font-weight: 700; white-space: nowrap; text-align: right; }
+.math .sub-c { color: var(--sub); } .math .host-c { color: var(--host); } .math .net-c { color: var(--net); }
+
+.blocks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 640px) { .blocks { grid-template-columns: minmax(0, 1fr); } }
+.blk { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; min-width: 0; }
+.blk .k { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.blk .v { font-family: var(--f-mono); font-size: clamp(16px, 2.4vw, 20px); font-weight: 700; margin-top: 6px; overflow-wrap: anywhere; }
+.blk.net { border-top: 3px solid var(--net); } .blk.rng { border-top: 3px solid var(--host); } .blk.bc { border-top: 3px solid var(--sub); }
+.blk .why { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.veil { filter: blur(7px); user-select: none; pointer-events: none; }
+
+.check { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.check label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 650; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+.check input.good { border-color: var(--ok); box-shadow: 0 0 0 1px var(--ok); }
+.check input.wrong { border-color: var(--bad); box-shadow: 0 0 0 1px var(--bad); }
+.verdict { font-size: 14px; min-height: 1.4em; }
+.toggle { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 600; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--sub); }
+
+.tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+table.subs { border-collapse: collapse; width: 100%; font-family: var(--f-mono); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+table.subs th { font-family: var(--f-body); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.subs td { padding: 7px 12px; border-top: 1px solid var(--line); white-space: nowrap; }
+table.subs tr.mine td { background: var(--sub-tint); font-weight: 700; }
+table.subs td.gap { text-align: center; color: var(--muted); }
+.foot { font-size: 13px; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .bit { transition: background-color .2s, box-shadow .2s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">IPv4 subnetting · learning tool</div>
+    <h1>Subnet Lab</h1>
+    <p class="lede">Type a network, pick its starting mask, and borrow bits. Then step through the ANDing one bit at a time to see how a router finds the network a host belongs to.</p>
+  </header>
+
+  <form class="controls" id="form" autocomplete="off">
+    <div class="fields">
+      <label class="f" for="ip">Network address
+        <input type="text" id="ip" value="192.168.1.0" inputmode="decimal" spellcheck="false">
+      </label>
+      <label class="f" for="start">Starting mask
+        <select id="start"></select>
+      </label>
+      <label class="f" for="borrow">Bits to borrow
+        <span class="borrow-row"><input type="range" id="borrow" min="0" max="6" value="1"><output id="borrowOut">1</output></span>
+      </label>
+      <label class="f" for="host">Host to test (AND)
+        <input type="text" id="host" value="192.168.1.138" inputmode="decimal" spellcheck="false">
+      </label>
+    </div>
+    <div class="plan">
+      <div class="plan-head"><strong>Plan from requirements</strong> <span class="muted">Not sure how many bits to borrow? Enter what the network needs.</span></div>
+      <div class="fields">
+        <label class="f" for="needHosts">Hosts in the largest subnet
+          <input type="text" id="needHosts" inputmode="numeric" placeholder="e.g. 50">
+        </label>
+        <label class="f" for="needSubs">Subnets needed (include spares)
+          <input type="text" id="needSubs" inputmode="numeric" placeholder="e.g. 4">
+        </label>
+        <div class="f plan-btn"><button type="button" class="primary" id="planBtn">Find the mask</button></div>
+      </div>
+      <div class="planout" id="planOut" hidden></div>
+    </div>
+    <div class="presets">
+      <span>Try an example:</span>
+      <button type="button" data-p="192.168.0.0|24|0|192.168.0.1" data-need="50|4">Lab: LAN-A 50, LAN-B 40, 2 spare</button>
+      <button type="button" data-p="192.168.1.0|24|1|192.168.1.138">192.168.1.0 /24 → /25 (video)</button>
+      <button type="button" data-p="192.168.1.0|24|2|192.168.1.100">/24 → /26</button>
+      <button type="button" data-p="172.16.0.0|16|2|172.16.150.20">172.16.0.0 /16 → /18</button>
+      <button type="button" data-p="10.0.0.0|8|4|10.37.5.9">10.0.0.0 /8 → /12</button>
+    </div>
+    <div id="msg" hidden></div>
+  </form>
+
+  <div id="out">
+    <div style="display:flex;flex-direction:column;gap:22px">
+
+      <section class="step">
+        <h2><span class="n">STEP 1</span>Convert to binary and borrow bits</h2>
+        <p class="muted">Each octet is 8 bits with place values 128 to 1. Borrowed bits come from the host portion, left to right. <strong>Click a bit in the MASK row</strong> to borrow up to that bit (or click the last orange bit to give it back).</p>
+        <div class="legend"><span class="ln"><i></i>Network bits (original mask)</span><span class="ls"><i></i>Subnet bits (borrowed)</span><span class="lh"><i></i>Host bits</span></div>
+        <div class="octets" id="octets"></div>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">STEP 2</span>AND the host with the mask</h2>
+        <p class="muted">A true AND a true makes a true. Anything AND a false makes a false. The octets that are fully network bits are filled in for you; press Next bit and watch the AND row in the grid above fill in.</p>
+        <div class="stepper">
+          <button type="button" class="primary" id="next">Next bit</button>
+          <button type="button" id="octet">Finish this octet</button>
+          <button type="button" id="all">Show all</button>
+          <button type="button" id="reset">Start over</button>
+          <span class="muted mono" id="progress"></span>
+        </div>
+        <div class="explain" id="explain"></div>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">STEP 3</span>Do the math</h2>
+        <div class="math"><table id="math"></table></div>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">STEP 4</span>Check yourself</h2>
+        <p class="muted">Before you look at the answer blocks, type what you think the host's subnet is.</p>
+        <div class="check">
+          <label for="cNet">Network address<input type="text" id="cNet" spellcheck="false"></label>
+          <label for="cFirst">First usable<input type="text" id="cFirst" spellcheck="false"></label>
+          <label for="cLast">Last usable<input type="text" id="cLast" spellcheck="false"></label>
+          <label for="cBc">Broadcast<input type="text" id="cBc" spellcheck="false"></label>
+        </div>
+        <div class="stepper">
+          <button type="button" class="primary" id="checkBtn">Check my answers</button>
+          <label class="toggle" for="quiz"><input type="checkbox" id="quiz"> Hide answers until I check</label>
+        </div>
+        <div class="verdict" id="verdict"></div>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">STEP 5</span>Answer blocks</h2>
+        <div class="blocks" id="blocks"></div>
+      </section>
+
+      <section class="step">
+        <h2><span class="n">STEP 6</span>Every subnet you created</h2>
+        <p class="muted" id="tableNote"></p>
+        <div class="tablewrap" id="tableWrap"><table class="subs" id="subs"></table></div>
+        <p class="foot">The first address in each subnet is the network address and the last is the broadcast address. Neither can be given to a device.</p>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const PV = [128, 64, 32, 16, 8, 4, 2, 1];
+  const S = { ip: 0, start: 24, newp: 25, host: 0, reveal: 24, last: -1, checked: false };
+
+  // ---- helpers
+  function parseIP(s) {
+    const p = String(s).trim().split(".");
+    if (p.length !== 4) return null;
+    let n = 0;
+    for (const x of p) {
+      if (!/^\d{1,3}$/.test(x)) return null;
+      const v = +x; if (v > 255) return null;
+      n = n * 256 + v;
+    }
+    return n >>> 0;
+  }
+  const maskOf = (p) => (p === 0 ? 0 : (0xFFFFFFFF << (32 - p)) >>> 0);
+  const dotted = (n) => [n >>> 24, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join(".");
+  const octet = (n, i) => (n >>> (24 - 8 * i)) & 255;
+  const bitAt = (n, i) => (n >>> (31 - i)) & 1;
+  const fmt = (x) => x.toLocaleString("en-US");
+  const sumOf = (v) => { const parts = PV.filter((p) => v & p); return parts.length ? parts.join(" + ") : "0"; };
+  const portion = (i) => (i < S.start ? "net" : i < S.newp ? "sub" : "host");
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // ---- setup selects
+  const startSel = $("start");
+  for (let p = 1; p <= 30; p++) {
+    const o = document.createElement("option");
+    o.value = p; o.textContent = "/" + p + "  (" + dotted(maskOf(p)) + ")";
+    if (p === 24) o.selected = true;
+    startSel.appendChild(o);
+  }
+
+  let quiz = false;
+  try { quiz = localStorage.getItem("subnetlab-quiz") === "1"; } catch (e) {}
+  $("quiz").checked = quiz;
+
+  // ---- read inputs
+  function readInputs(resetReveal, src) {
+    const msg = $("msg");
+    const ip = parseIP($("ip").value);
+    let host = parseIP($("host").value);
+    const start = +startSel.value;
+    const maxB = 30 - start;
+    const br = $("borrow");
+    br.max = maxB;
+    if (+br.value > maxB) br.value = maxB;
+    const borrow = +br.value;
+    $("borrowOut").textContent = borrow;
+
+    if (ip === null || host === null) {
+      msg.hidden = false; msg.className = "msg err";
+      msg.textContent = (ip === null ? "The network address" : "The host address") + " needs four numbers from 0 to 255 separated by dots, like 192.168.1.0.";
+      $("out").hidden = true;
+      return;
+    }
+    $("out").hidden = false;
+    S.start = start; S.newp = start + borrow;
+    S.ip = (ip & maskOf(start)) >>> 0;
+    const notes = [];
+    if (S.ip !== ip) notes.push(esc(dotted(ip)) + " is not a network address for /" + start + ", so the lab uses " + dotted(S.ip) + " (the result of ANDing it with the starting mask).");
+    const outside = ((host & maskOf(start)) >>> 0) !== S.ip;
+    if (outside && src === "net") {
+      const old = host;
+      host = (S.ip + 1) >>> 0;
+      $("host").value = dotted(host);
+      notes.push("The test host " + dotted(old) + " was outside " + dotted(S.ip) + "/" + start + ", so it moved to " + dotted(host) + ". Change it to any host you want to test.");
+    } else if (outside) {
+      const last = (S.ip | (~maskOf(start) >>> 0)) >>> 0;
+      notes.push("Host " + dotted(host) + " is outside " + dotted(S.ip) + "/" + start + ". Pick a host from " + dotted(S.ip + 1) + " to " + dotted(last - 1) + '.<button type="button" id="fixHost">Use ' + dotted(S.ip + 1) + "</button>");
+    }
+    S.host = host;
+    if (notes.length) { msg.hidden = false; msg.className = "msg"; msg.innerHTML = notes.join(" "); }
+    else msg.hidden = true;
+
+    if (resetReveal) resetSteps();
+    render();
+  }
+
+  function defaultReveal() { return Math.min(32, Math.floor((S.newp - 1) / 8) * 8); }
+  function resetSteps() { S.reveal = defaultReveal(); S.last = -1; S.checked = false; clearCheck(); }
+
+  // ---- render
+  function render() {
+    renderBits(); renderMath(); renderExplain(); renderBlocks(); renderTable();
+  }
+
+  function renderBits() {
+    const nm = maskOf(S.newp), andv = (S.host & nm) >>> 0;
+    const focusOct = Math.floor((S.newp - 1) / 8);
+    let html = "";
+    for (let o = 0; o < 4; o++) {
+      const rowIP = [], rowM = [], rowA = [];
+      let allRevealed = true;
+      for (let b = 0; b < 8; b++) {
+        const i = o * 8 + b, pc = "p-" + portion(i);
+        const hb = bitAt(S.host, i), mb = bitAt(nm, i), ab = bitAt(andv, i);
+        rowIP.push('<span class="bit ' + pc + (hb ? "" : " zero") + '">' + hb + "</span>");
+        const locked = i < S.start || i > 29;
+        const tip = locked ? (i < S.start ? "Part of the starting mask" : "Leave at least 2 host bits") : "Borrow bits up to here";
+        rowM.push('<button type="button" class="bit ' + pc + (mb ? "" : " zero") + (locked ? " locked" : "") + '" data-i="' + i + '" title="' + tip + '" aria-label="Mask bit ' + (i + 1) + ", " + mb + ". " + tip + '">' + mb + "</button>");
+        if (i < S.reveal) rowA.push('<span class="bit ' + pc + (ab ? "" : " zero") + (i === S.last ? " cur" : "") + '">' + ab + "</span>");
+        else { allRevealed = false; rowA.push('<span class="bit hidden' + (i === S.reveal ? " cur" : "") + '">?</span>'); }
+      }
+      const hv = octet(S.host, o), mv = octet(nm, o), av = octet(andv, o);
+      html += '<div class="oct' + (o === focusOct ? " focus" : "") + '">' +
+        '<div class="oct-title"><span>Octet ' + (o + 1) + "</span><span>" + (o === focusOct ? "interesting octet" : "") + "</span></div>" +
+        '<div class="row"><span></span>' + PV.map((p) => '<span class="pv">' + p + "</span>").join("") + '<span class="pv" style="text-align:right">dec</span></div>' +
+        '<div class="row"><span class="rl">HOST</span>' + rowIP.join("") + '<span class="dec">' + hv + "</span></div>" +
+        '<div class="row"><span class="rl">MASK</span>' + rowM.join("") + '<span class="dec">' + mv + "</span></div>" +
+        '<div class="row and-row"><span class="rl">AND</span>' + rowA.join("") + '<span class="dec">' + (allRevealed ? av : "?") + "</span></div>" +
+        '<div class="sums">' + hv + " = " + sumOf(hv) + "</div>" +
+        "</div>";
+    }
+    $("octets").innerHTML = html;
+  }
+
+  function renderMath() {
+    const sm = maskOf(S.start), nm = maskOf(S.newp);
+    const s = S.newp - S.start, h = 32 - S.newp;
+    const fo = Math.floor((S.newp - 1) / 8), fv = octet(nm, fo), block = 256 - fv;
+    const rows = [
+      ["Starting mask", "/" + S.start + " has " + S.start + " network bits", dotted(sm)],
+      ["New mask", "/" + S.start + ' + <span class="sub-c">' + s + " borrowed</span> = /" + S.newp + ". Octet " + (fo + 1) + ": " + fv + " = " + sumOf(fv), dotted(nm) + " (/" + S.newp + ")"],
+      ["Subnets", 'subnet bits <span class="sub-c">s = ' + S.newp + " − " + S.start + " = " + s + "</span> → 2<sup>" + s + "</sup>", fmt(2 ** s)],
+      ["Usable hosts", 'host bits <span class="host-c">h = 32 − ' + S.newp + " = " + h + "</span> → 2<sup>" + h + "</sup> − 2 = " + fmt(2 ** h) + " − 2 (network + broadcast)", fmt(2 ** h - 2) + " per subnet"],
+      ["Block size", "256 − " + fv + " = " + block + ", so subnets count up by " + block + " in octet " + (fo + 1), String(block)],
+    ];
+    $("math").innerHTML = rows.map((r) => "<tr><td>" + r[0] + '</td><td class="mono">' + r[1] + '</td><td class="res">' + r[2] + "</td></tr>").join("");
+  }
+
+  function renderExplain() {
+    const nm = maskOf(S.newp);
+    $("progress").textContent = S.reveal + " / 32 bits";
+    $("next").disabled = $("octet").disabled = $("all").disabled = S.reveal >= 32;
+    let t;
+    if (S.last >= 0) {
+      const i = S.last, a = bitAt(S.host, i), m = bitAt(nm, i), r = a & m;
+      const kind = { net: "a network bit", sub: "a borrowed subnet bit", host: "a host bit" }[portion(i)];
+      t = "Bit " + (i + 1) + " (octet " + (Math.floor(i / 8) + 1) + ", place value " + PV[i % 8] + ", " + kind + "): " +
+        '<span class="mono">' + a + " AND " + m + " = " + r + "</span>. " +
+        (a && m ? "Both are true, so the result is true." : m === 0 ? "The mask is 0 here, so the result is 0 no matter what the host has." : "The host bit is 0, so the result is 0.");
+    } else {
+      t = S.reveal >= 32 ? "All 32 bits are done." : "Press <strong>Next bit</strong> to AND bit " + (S.reveal + 1) + " (octet " + (Math.floor(S.reveal / 8) + 1) + ", place value " + PV[S.reveal % 8] + ").";
+    }
+    if (S.reveal >= 32) {
+      const n = (S.host & nm) >>> 0;
+      t += ' Result: <span class="mono">' + dotted(S.host) + " AND " + dotted(nm) + " = " + dotted(n) + "</span>. That is the network address of this host's subnet.";
+    }
+    $("explain").innerHTML = t;
+  }
+
+  function hostSubnet() {
+    const nm = maskOf(S.newp), net = (S.host & nm) >>> 0, bc = (net | (~nm >>> 0)) >>> 0;
+    return { net, first: net + 1, last: bc - 1, bc };
+  }
+
+  function renderBlocks() {
+    const r = hostSubnet(), hide = quiz && !S.checked;
+    const v = hide ? ' veil' : '';
+    $("blocks").innerHTML =
+      '<div class="blk net"><div class="k">Network address</div><div class="v' + v + '">' + dotted(r.net) + '</div><div class="why">First address. All host bits are 0.</div></div>' +
+      '<div class="blk rng"><div class="k">Usable IP range</div><div class="v' + v + '">' + dotted(r.first) + " – " + dotted(r.last) + '</div><div class="why">Everything between network and broadcast.</div></div>' +
+      '<div class="blk bc"><div class="k">Broadcast address</div><div class="v' + v + '">' + dotted(r.bc) + '</div><div class="why">Last address. All host bits are 1.</div></div>';
+  }
+
+  function renderTable() {
+    const count = 2 ** (S.newp - S.start), size = 2 ** (32 - S.newp);
+    const mine = Math.floor((((S.host & maskOf(S.newp)) >>> 0) - S.ip) / size);
+    const inRange = mine >= 0 && mine < count;
+    let idx = [];
+    if (count <= 64) idx = [...Array(count).keys()];
+    else {
+      const set = new Set([0, 1, 2, 3, 4, 5, 6, 7, count - 1]);
+      if (inRange) [mine - 1, mine, mine + 1].forEach((x) => { if (x >= 0 && x < count) set.add(x); });
+      idx = [...set].sort((a, b) => a - b);
+    }
+    let rows = "", prev = -1;
+    for (const i of idx) {
+      if (i - prev > 1) rows += '<tr><td class="gap" colspan="5">… ' + fmt(i - prev - 1) + " more subnets …</td></tr>";
+      const net = (S.ip + i * size) >>> 0, bc = (net + size - 1) >>> 0;
+      rows += '<tr class="' + (i === mine ? "mine" : "") + '"><td>' + (i + 1) + "</td><td>" + dotted(net) + "</td><td>" + dotted(net + 1) + "</td><td>" + dotted(bc - 1) + "</td><td>" + dotted(bc) + "</td></tr>";
+      prev = i;
+    }
+    $("subs").innerHTML = "<thead><tr><th>#</th><th>Network</th><th>First usable</th><th>Last usable</th><th>Broadcast</th></tr></thead><tbody>" + rows + "</tbody>";
+    $("tableNote").textContent = "Borrowing " + (S.newp - S.start) + " bit" + (S.newp - S.start === 1 ? "" : "s") + " from " + dotted(S.ip) + "/" + S.start + " makes " + fmt(count) + " subnet" + (count === 1 ? "" : "s") + " of " + fmt(size) + " addresses each." + (inRange ? " The highlighted row holds " + dotted(S.host) + "." : "") + (count > 64 ? " Only some rows are shown." : "");
+    $("tableWrap").classList.toggle("veil", quiz && !S.checked);
+  }
+
+  // ---- self-check
+  function clearCheck() {
+    ["cNet", "cFirst", "cLast", "cBc"].forEach((id) => $(id).classList.remove("good", "wrong"));
+    $("verdict").textContent = "";
+  }
+  function check() {
+    const r = hostSubnet();
+    const want = { cNet: r.net, cFirst: r.first, cLast: r.last, cBc: r.bc };
+    let right = 0, filled = 0;
+    for (const id in want) {
+      const el = $(id); el.classList.remove("good", "wrong");
+      if (!el.value.trim()) continue;
+      filled++;
+      const ok = parseIP(el.value) === want[id];
+      el.classList.add(ok ? "good" : "wrong"); if (ok) right++;
+    }
+    S.checked = true;
+    const v = $("verdict");
+    if (!filled) { v.innerHTML = "Type at least one answer, then check."; S.checked = false; return; }
+    v.innerHTML = right === 4 ? '<strong style="color:var(--ok)">All four correct.</strong> Change the host or borrow another bit and try again.'
+      : "<strong>" + right + " of " + filled + "</strong> correct. Red boxes need another look: AND the host with the mask for the network, then set every host bit to 1 for the broadcast.";
+    renderBlocks(); renderTable();
+  }
+
+  // ---- events
+  $("form").addEventListener("submit", (e) => e.preventDefault());
+  $("ip").addEventListener("input", () => readInputs(true, "net"));
+  $("host").addEventListener("input", () => readInputs(true));
+  startSel.addEventListener("change", () => readInputs(true, "net"));
+  $("msg").addEventListener("click", (e) => {
+    if (e.target.id === "fixHost") { $("host").value = dotted((S.ip + 1) >>> 0); readInputs(true); }
+  });
+
+  // ---- plan from requirements
+  function plan() {
+    const out = $("planOut");
+    const H = parseInt($("needHosts").value, 10), N = parseInt($("needSubs").value, 10);
+    out.hidden = false;
+    if (!(H >= 1) || !(N >= 1)) {
+      out.className = "planout bad";
+      out.innerHTML = "Enter whole numbers for both: the hosts your largest subnet needs, and how many subnets you need in total (count the spares).";
+      return;
+    }
+    if (parseIP($("ip").value) === null) { out.className = "planout bad"; out.textContent = "Fix the network address first."; return; }
+    const start = +startSel.value, avail = 32 - start;
+    let s = 0; while (2 ** s < N) s++;
+    let h = 2; while (2 ** h - 2 < H) h++;
+    const lines = [
+      "<strong>Subnets:</strong> you need " + N + '. Find the smallest power of 2 that is ' + N + ' or more: <span class="mono">2<sup>' + s + "</sup> = " + fmt(2 ** s) + "</span>, so borrow <strong>" + s + " bit" + (s === 1 ? "" : "s") + "</strong>.",
+      "<strong>Hosts:</strong> you need " + H + '. Find the fewest host bits where 2<sup>h</sup> − 2 is ' + H + ' or more: <span class="mono">2<sup>' + h + "</sup> − 2 = " + fmt(2 ** h - 2) + "</span>, so keep at least <strong>" + h + " host bits</strong>.",
+      "<strong>Does it fit?</strong> A /" + start + ' has <span class="mono">32 − ' + start + " = " + avail + "</span> bits to share. " + s + " + " + h + " = " + (s + h) + (s + h <= avail ? " ≤ " + avail + ", so it fits." : " > " + avail + ", so it does not fit.")
+    ];
+    if (s + h > avail || start + s > 30) {
+      out.className = "planout bad";
+      lines.push("Not possible from " + dotted(parseIP($("ip").value) & maskOf(start)) + "/" + start + ". You need a bigger starting network or fewer, smaller subnets.");
+      out.innerHTML = lines.map((l) => "<div>" + l + "</div>").join("");
+      return;
+    }
+    const np = start + s, hostsEach = 2 ** (32 - np) - 2;
+    lines.push("<strong>Answer:</strong> borrow " + s + ' bits → <span class="mono">/' + np + " = " + dotted(maskOf(np)) + "</span>. That gives " + fmt(2 ** s) + " subnets with " + fmt(hostsEach) + " usable hosts each. The steps below now use this mask.");
+    out.className = "planout good";
+    out.innerHTML = lines.map((l) => "<div>" + l + "</div>").join("");
+    $("borrow").value = s;
+    readInputs(true, "net");
+  }
+  $("planBtn").addEventListener("click", plan);
+  $("borrow").addEventListener("input", () => readInputs(true));
+  document.querySelectorAll("[data-p]").forEach((b) => b.addEventListener("click", () => {
+    const [ip, st, br, h] = b.dataset.p.split("|");
+    $("ip").value = ip; startSel.value = st; $("borrow").max = 30 - +st; $("borrow").value = br; $("host").value = h;
+    ["cNet", "cFirst", "cLast", "cBc"].forEach((id) => ($(id).value = ""));
+    if (b.dataset.need) {
+      const [nh, ns] = b.dataset.need.split("|");
+      $("needHosts").value = nh; $("needSubs").value = ns;
+      plan();
+    } else {
+      $("planOut").hidden = true;
+      readInputs(true);
+    }
+  }));
+  $("octets").addEventListener("click", (e) => {
+    const b = e.target.closest("button.bit"); if (!b || b.classList.contains("locked")) return;
+    const i = +b.dataset.i;
+    const np = i + 1 === S.newp ? i : i + 1;
+    $("borrow").value = Math.max(0, np - S.start);
+    readInputs(true);
+  });
+  $("next").addEventListener("click", () => { if (S.reveal < 32) { S.last = S.reveal; S.reveal++; renderBits(); renderExplain(); } });
+  $("octet").addEventListener("click", () => { if (S.reveal < 32) { const end = (Math.floor(S.reveal / 8) + 1) * 8; S.last = end - 1; S.reveal = end; renderBits(); renderExplain(); } });
+  $("all").addEventListener("click", () => { S.reveal = 32; S.last = -1; renderBits(); renderExplain(); });
+  $("reset").addEventListener("click", () => { S.reveal = defaultReveal(); S.last = -1; renderBits(); renderExplain(); });
+  $("checkBtn").addEventListener("click", check);
+  $("quiz").addEventListener("change", (e) => {
+    quiz = e.target.checked;
+    try { localStorage.setItem("subnetlab-quiz", quiz ? "1" : "0"); } catch (err) {}
+    renderBlocks(); renderTable();
+  });
+
+  readInputs(true);
+})();
+</script>
+
+</body></html>
