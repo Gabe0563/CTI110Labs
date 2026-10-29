@@ -225,7 +225,7 @@ const COURSES = [
        type: "Lab",
        week: "—",
         updated: "2026-08-13",
-        href: "Subnet Lab.html",
+        href: "Subnet_Lab.html",
         reinstructorOnly: false
 }
     ]
