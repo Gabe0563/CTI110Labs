@@ -212,6 +212,25 @@ const COURSES = [
     ]
 
   },
+   {
+    id: "Networking",
+    code: "NET",
+    name: "CCNA 1,2,3",
+    accent: "Yellow",
+    description: "Networking ",
+    assignments: [
+     {
+       title: "Subnetting",
+       description: "CCNA",
+       type: "Lab",
+       week: "—",
+        updated: "2026-08-13",
+        href: "Subnet Lab.html",
+        reinstructorOnly: false
+}
+    ]
+
+  },
 
   /* ------------------------------------------------------------
      EXAMPLE: a second class living in its OWN separate repo.
