@@ -193,6 +193,25 @@ const COURSES = [
      
     ]
   },
+     {
+    id: "Practice Exams",
+    code: "MISC",
+    name: "Practice Exams",
+    accent: "Red",
+    description: "Practice Exams for different classes",
+    assignments: [
+     {
+       title: "CTS 120 Practice Exam",
+       description: "A+",
+       type: "Lab",
+       week: "—",
+        updated: "2026-08-13",
+        href: "A+CertPracticeExam.html",
+        reinstructorOnly: false
+}
+    ]
+
+  },
   {
     id: "MicrosoftOffice",
     code: "CIS 110",
