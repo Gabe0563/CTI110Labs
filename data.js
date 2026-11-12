@@ -250,6 +250,25 @@ const COURSES = [
     ]
 
   },
+     {
+    id: "A+ Core 1",
+    code: "CTS 120",
+    name: "Core 1",
+    accent: "Yellow",
+    description: "A+",
+    assignments: [
+     {
+       title: "Printer Lab",
+       description: "Module 10",
+       type: "Lab",
+       week: "—",
+        updated: "2026-08-13",
+        href: "printer-help-desk-simulator.html",
+        reinstructorOnly: false
+}
+    ]
+
+  },
 
   /* ------------------------------------------------------------
      EXAMPLE: a second class living in its OWN separate repo.
